@@ -17,15 +17,19 @@ private val DarkColorScheme = darkColorScheme(
     primary = DarkRed,
     secondary = DarkGray,
     tertiary = DarkBlack,
-    background = DarkWhite
+    surfaceVariant = DarkWhite,
+    background = DarkWhite,
+    error = DarkRed
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = LightRed,
     secondary = LightGray,
     tertiary = LightBlack,
+    surfaceVariant = LightSubWhite,
     background = LightWhite,
-    surface = LightRed
+    surface = LightRed,
+    error = LightRed
 )
 
 

@@ -1,5 +1,6 @@
 package com.softcross.insuranceapp.presentation.components
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,7 +20,7 @@ fun CustomText(
     modifier: Modifier = Modifier,
     fontSize: TextUnit = 12.sp,
     fontFamilyID: Int = R.font.poppins_regular,
-    color: Color = Color.DarkGray,
+    color: Color = MaterialTheme.colorScheme.tertiary,
     textAlign: TextAlign = TextAlign.Start,
     line: Int = 1,
     textLayoutResult: ((TextLayoutResult) -> Unit)? = null

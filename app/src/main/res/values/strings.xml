@@ -1,3 +1,34 @@
 <resources>
     <string name="app_name">InsuranceApp</string>
+    <string name="welcome_login">Welcome back, login to your account.</string>
+    <string name="enter_email">Enter your email</string>
+    <string name="enter_password">Enter your password</string>
+    <string name="stay_logged">Stay Logged</string>
+    <string name="email_validation_error">Please enter a valid email address</string>
+    <string name="login">Login</string>
+    <string name="register_text">Welcome, register for save movies &amp; shows and more feature</string>
+    <string name="password_error_title">Password must be;</string>
+    <string name="password_error_one">at least 8 characters</string>
+    <string name="password_error_two">a digit must occur at least once</string>
+    <string name="password_error_three">a lower case letter must occur at least once</string>
+    <string name="password_error_four">an upper case letter must occur at least once</string>
+    <string name="show_password">Show password</string>
+    <string name="hide_password">Hide password</string>
+    <string name="correct">Correct</string>
+    <string name="wrong">Wrong</string>
+    <string name="something_was_wrong_on_register">Oops, Something went wrong on during %s!</string>
+    <string name="forgot_password">Forgot your password?</string>
+    <string name="new_customer">New Customer</string>
+    <string name="new_policy">New Policy</string>
+    <string name="my_customers">My Customers</string>
+    <string name="my_customers_text">Show my recent customers for the see active policies, edit policy or works on customer info</string>
+    <string name="my_policies">My Policies</string>
+    <string name="my_policies_text">Show my recent policies for the see recent, total sales and edit policy</string>
+    <string name="my_payments">My Payments</string>
+    <string name="my_payments_text">Show my all payments, policies, customers, budgets and sales</string>
+    <string name="field_id_number">Please enter customer ID Number</string>
+    <string name="field_name">Please enter customer name</string>
+    <string name="field_surname">Please enter customer surname</string>
+    <string name="field_phone">Please enter customer phone</string>
+    <string name="field_email">Please enter customer email</string>
 </resources>

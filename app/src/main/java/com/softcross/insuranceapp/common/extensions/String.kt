@@ -1,5 +1,9 @@
 package com.softcross.insuranceapp.common.extensions
 
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import java.util.regex.Pattern
 
 fun String.emailRegex(): Boolean {
@@ -33,4 +37,10 @@ fun String.passwordRegex(): Boolean {
     } else {
         false
     }
+}
+
+fun Long.toDate(format: String = "dd/MM/yyyy", locale: Locale = Locale.getDefault()): String {
+    val date = Date(this)
+    val formatter = SimpleDateFormat(format, locale)
+    return formatter.format(date)
 }
