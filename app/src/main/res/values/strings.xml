@@ -16,19 +16,24 @@
     <string name="hide_password">Hide password</string>
     <string name="correct">Correct</string>
     <string name="wrong">Wrong</string>
+    <string name="search">Search</string>
+    <string name="show_policies">Show Policies</string>
     <string name="something_was_wrong_on_register">Oops, Something went wrong on during %s!</string>
     <string name="forgot_password">Forgot your password?</string>
     <string name="new_customer">New Customer</string>
     <string name="new_policy">New Policy</string>
+    <string name="customers_info_text">Please enter ID or Name-Surname for search:</string>
     <string name="my_customers">My Customers</string>
     <string name="my_customers_text">Show my recent customers for the see active policies, edit policy or works on customer info</string>
     <string name="my_policies">My Policies</string>
     <string name="my_policies_text">Show my recent policies for the see recent, total sales and edit policy</string>
     <string name="my_payments">My Payments</string>
     <string name="my_payments_text">Show my all payments, policies, customers, budgets and sales</string>
+    <string name="field_just_id">ID Number</string>
+    <string name="field_just_name">Name Surname</string>
     <string name="field_id_number">Please enter customer ID Number</string>
     <string name="field_name">Please enter customer name</string>
     <string name="field_surname">Please enter customer surname</string>
-    <string name="field_phone">Please enter customer phone</string>
+    <string name="field_phone">XXXX-XXX-XX-XX (Phone)</string>
     <string name="field_email">Please enter customer email</string>
 </resources>

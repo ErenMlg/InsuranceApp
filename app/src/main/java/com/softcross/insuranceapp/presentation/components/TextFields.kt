@@ -57,6 +57,7 @@ import com.softcross.insuranceapp.common.extensions.toDate
 
 @Composable
 fun CustomTextField(
+    modifier: Modifier = Modifier,
     givenValue: String,
     placeHolder: String,
     onValueChange: (String) -> Unit,
@@ -69,16 +70,11 @@ fun CustomTextField(
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
         TextField(
             placeholder = {
-                Text(
-                    text = placeHolder,
-                    fontFamily = FontFamily(Font(R.font.poppins_regular)),
-                    fontSize = 14.sp,
-                    color = Color.Gray
-                )
+                CustomText(text = placeHolder, fontSize = 14.sp, color = Color.Gray)
             },
             isError = !givenValue.regex(),
             trailingIcon = trailingIcon,

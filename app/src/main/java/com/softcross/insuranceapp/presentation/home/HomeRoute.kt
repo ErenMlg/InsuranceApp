@@ -32,41 +32,47 @@ fun HomeRoute() {
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp, bottom = 8.dp, end = 8.dp, start = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxWidth(0.9f),
         ) {
-            HomeSmallButtons(
-                modifier = Modifier.weight(0.5f),
-                icon = R.drawable.icon_add_customer,
-                title = R.string.new_customer
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp, bottom = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                HomeSmallButtons(
+                    modifier = Modifier.weight(0.5f).padding(end = 8.dp),
+                    icon = R.drawable.icon_add_customer,
+                    title = R.string.new_customer
+                )
+                HomeSmallButtons(
+                    modifier = Modifier.weight(0.5f).padding(start = 8.dp),
+                    icon = R.drawable.icon_add_policy,
+                    title = R.string.new_policy
+                )
+            }
+            HomeLargeButtons(
+                icon = R.drawable.icon_customer,
+                title = R.string.my_customers,
+                text = R.string.my_customers_text
             )
-            HomeSmallButtons(
-                modifier = Modifier.weight(0.5f),
-                icon = R.drawable.icon_add_policy,
-                title = R.string.new_policy
+            HomeLargeButtons(
+                icon = R.drawable.icon_policy,
+                title = R.string.my_policies,
+                text = R.string.my_policies_text
+            )
+            HomeLargeButtons(
+                icon = R.drawable.icon_payments,
+                title = R.string.my_payments,
+                text = R.string.my_payments_text
             )
         }
-        HomeLargeButtons(
-            icon = R.drawable.icon_customer,
-            title = R.string.my_customers,
-            text = R.string.my_customers_text
-        )
-        HomeLargeButtons(
-            icon = R.drawable.icon_policy,
-            title = R.string.my_policies,
-            text = R.string.my_policies_text
-        )
-        HomeLargeButtons(
-            icon = R.drawable.icon_payments,
-            title = R.string.my_payments,
-            text = R.string.my_payments_text
-        )
     }
 }
 
@@ -80,7 +86,6 @@ fun HomeSmallButtons(
         onClick = { /*TODO*/ },
         shape = RoundedCornerShape(8.dp),
         modifier = modifier
-            .padding(horizontal = 8.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -118,7 +123,7 @@ fun HomeLargeButtons(
         onClick = { /*TODO*/ },
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(vertical = 8.dp)
             .fillMaxWidth()
             .height(150.dp)
     ) {

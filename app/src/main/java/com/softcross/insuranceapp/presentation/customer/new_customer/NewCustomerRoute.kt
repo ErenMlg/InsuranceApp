@@ -1,5 +1,6 @@
 package com.softcross.insuranceapp.presentation.customer.new_customer
 
+import android.telephony.PhoneNumberUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.scrollable
@@ -32,7 +33,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.softcross.insuranceapp.R
+import com.softcross.insuranceapp.common.PhoneNumberVisualTransformation
+import com.softcross.insuranceapp.common.extensions.nameSurnameRegex
 import com.softcross.insuranceapp.common.extensions.passwordRegex
+import com.softcross.insuranceapp.common.extensions.phoneRegex
 import com.softcross.insuranceapp.presentation.components.CustomDateTimePicker
 import com.softcross.insuranceapp.presentation.components.CustomText
 import com.softcross.insuranceapp.presentation.components.CustomTextField
@@ -71,7 +75,7 @@ fun NewCustomerForm() {
     Column(
         modifier = Modifier
             .padding(bottom = 16.dp)
-            .fillMaxWidth(0.8f)
+            .fillMaxWidth(0.9f)
             .verticalScroll(rememberScrollState())
     ) {
         CustomTextField(
@@ -85,13 +89,13 @@ fun NewCustomerForm() {
             givenValue = name,
             placeHolder = stringResource(id = R.string.field_name),
             onValueChange = { name = it },
-            regex = String::passwordRegex
+            regex = String::nameSurnameRegex
         )
         CustomTextField(
             givenValue = surname,
             placeHolder = stringResource(id = R.string.field_surname),
             onValueChange = { surname = it },
-            regex = String::passwordRegex
+            regex = String::nameSurnameRegex
         )
         CustomDateTimePicker(
             placeHolder = "Birthday",
@@ -111,9 +115,11 @@ fun NewCustomerForm() {
         )
         CustomTextField(
             givenValue = phoneNumber,
+            visualTransformation = PhoneNumberVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
             placeHolder = stringResource(id = R.string.field_phone),
-            onValueChange = { phoneNumber = it },
-            regex = String::passwordRegex
+            onValueChange = { if (it.length <= 11) phoneNumber = it },
+            regex = String::phoneRegex
         )
         CustomTextField(
             givenValue = email,

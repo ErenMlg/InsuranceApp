@@ -39,6 +39,10 @@ fun String.passwordRegex(): Boolean {
     }
 }
 
+fun String.phoneRegex(): Boolean {
+    return this.isNotEmpty() && this.length == 11
+}
+
 fun Long.toDate(format: String = "dd/MM/yyyy", locale: Locale = Locale.getDefault()): String {
     val date = Date(this)
     val formatter = SimpleDateFormat(format, locale)

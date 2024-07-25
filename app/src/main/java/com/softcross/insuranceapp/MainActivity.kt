@@ -11,6 +11,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
+import com.softcross.insuranceapp.presentation.customer.MyCustomersRoute
 import com.softcross.insuranceapp.presentation.customer.new_customer.NewCustomerRoute
 import com.softcross.insuranceapp.presentation.login.LoginRoute
 import com.softcross.insuranceapp.presentation.theme.InsuranceAppTheme
@@ -24,7 +25,7 @@ class MainActivity : ComponentActivity() {
                 window.statusBarColor = color
                 window.navigationBarColor = color
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    NewCustomerRoute(Modifier.padding(innerPadding))
+                    MyCustomersRoute(Modifier.padding(innerPadding))
                 }
             }
         }

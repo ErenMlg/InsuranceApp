@@ -95,7 +95,7 @@ fun LoginRoute(modifier: Modifier = Modifier) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier
-                    .fillMaxWidth(0.8f)
+                    .fillMaxWidth(0.9f)
                     .padding(bottom = 48.dp)
             ) {
                 CustomTextField(
