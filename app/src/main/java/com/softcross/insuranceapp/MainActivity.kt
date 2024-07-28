@@ -15,7 +15,9 @@ import com.softcross.insuranceapp.presentation.customer.MyCustomersRoute
 import com.softcross.insuranceapp.presentation.customer.new_customer.NewCustomerRoute
 import com.softcross.insuranceapp.presentation.login.LoginRoute
 import com.softcross.insuranceapp.presentation.theme.InsuranceAppTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,7 +27,7 @@ class MainActivity : ComponentActivity() {
                 window.statusBarColor = color
                 window.navigationBarColor = color
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MyCustomersRoute(Modifier.padding(innerPadding))
+                    LoginRoute(Modifier.padding(innerPadding))
                 }
             }
         }

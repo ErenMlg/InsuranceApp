@@ -1,6 +1,5 @@
-package com.softcross.insuranceapp.presentation.login
+package com.softcross.insuranceapp.presentation.login.reset_password
 
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +18,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,10 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.softcross.insuranceapp.R
-import com.softcross.insuranceapp.common.CurrentUser
-import com.softcross.insuranceapp.common.ResponseState
 import com.softcross.insuranceapp.common.extensions.emailRegex
 import com.softcross.insuranceapp.common.extensions.passwordRegex
 import com.softcross.insuranceapp.presentation.components.CustomPasswordTextField
@@ -46,37 +41,19 @@ import com.softcross.insuranceapp.presentation.components.CustomSnackbar
 import com.softcross.insuranceapp.presentation.components.CustomText
 import com.softcross.insuranceapp.presentation.components.CustomTextField
 import com.softcross.insuranceapp.presentation.components.LoadingTextButton
+import com.softcross.insuranceapp.presentation.login.LoginRoute
 import com.softcross.insuranceapp.presentation.theme.InsuranceAppTheme
 
+
 @Composable
-fun LoginRoute(
-    modifier: Modifier = Modifier,
-    viewModel: LoginViewModel = hiltViewModel()
+fun ResetPasswordRoute(
+    modifier: Modifier = Modifier
 ) {
-    val uiState = viewModel.loginUiState.value
     val context = LocalContext.current
     var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var checked by remember { mutableStateOf(false) }
     var loading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
 
-    LaunchedEffect(key1 = uiState) {
-        if (uiState is ResponseState.Success) {
-            CurrentUser.setCurrentUser(uiState.data)
-            if (checked) {
-                context.getSharedPreferences("logFile", Context.MODE_PRIVATE).edit()
-                    .putBoolean("stayLogged", true).apply()
-                context.getSharedPreferences("logFile", Context.MODE_PRIVATE).edit()
-                    .putString("userID", CurrentUser.getCurrentUserID()).apply()
-            }
-        }
-
-        if (uiState is ResponseState.Error) {
-            loading = false
-            errorMessage = uiState.message
-        }
-    }
 
     Box {
         Column(
@@ -87,7 +64,7 @@ fun LoginRoute(
             verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            LoginHeader()
+            ResetPasswordHeader()
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
@@ -104,48 +81,14 @@ fun LoginRoute(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     regex = String::emailRegex
                 )
-                CustomPasswordTextField(
-                    givenValue = password,
-                    placeHolder = stringResource(id = R.string.enter_password),
-                    onValueChange = { password = it }
-                )
                 LoadingTextButton(
                     isLoading = loading,
-                    isEnable = email.emailRegex() && password.passwordRegex(),
+                    isEnable = email.emailRegex(),
                     onClick = {
                         loading = true
-                        viewModel.loginUser(email, password)
                     },
-                    buttonText = R.string.login
+                    buttonText = R.string.send_link
                 )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Checkbox(
-                        checked = checked,
-                        onCheckedChange = {
-                            checked = !checked
-                        },
-                        modifier = Modifier.size(24.dp),
-                        colors = CheckboxDefaults.colors(
-                            checkedColor = MaterialTheme.colorScheme.primary,
-                            uncheckedColor = MaterialTheme.colorScheme.tertiary
-                        )
-                    )
-                    CustomText(
-                        text = "Stay logged",
-                        color = MaterialTheme.colorScheme.tertiary,
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
-                    CustomText(
-                        text = stringResource(id = R.string.forgot_password),
-                        textAlign = TextAlign.End,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
-                    )
-                }
             }
         }
         if (errorMessage.isNotEmpty()) {
@@ -161,7 +104,7 @@ fun LoginRoute(
 }
 
 @Composable
-fun LoginHeader() {
+fun ResetPasswordHeader() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -184,11 +127,19 @@ fun LoginHeader() {
             modifier = Modifier.padding(vertical = 8.dp)
         )
         CustomText(
-            text = stringResource(id = R.string.welcome_login),
+            text = stringResource(id = R.string.reset_password),
             fontSize = 14.sp,
             textAlign = TextAlign.Center,
             line = 2,
             modifier = Modifier.padding(vertical = 8.dp)
         )
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun LoginRoutePreview() {
+    InsuranceAppTheme {
+        ResetPasswordRoute()
     }
 }

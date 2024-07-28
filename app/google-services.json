@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "245213525781",
+    "project_id": "insuranceapp-44191",
+    "storage_bucket": "insuranceapp-44191.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:245213525781:android:ae143a26ac320e3ab99b1c",
+        "android_client_info": {
+          "package_name": "com.softcross.insuranceapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwISIIGRJjCujcgDAdvAmaf-3ELwConx0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

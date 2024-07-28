@@ -258,7 +258,8 @@ fun CustomPasswordTextField(
                     Icon(
                         painter = painterResource(id = R.drawable.icon_hide_password),
                         contentDescription = stringResource(id = R.string.hide_password),
-                        Modifier.noRippleClickable {
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.noRippleClickable {
                             passwordVisible = false
                         }
                     )
@@ -266,7 +267,8 @@ fun CustomPasswordTextField(
                     Icon(
                         painter = painterResource(id = R.drawable.icon_show_password),
                         contentDescription = stringResource(id = R.string.show_password),
-                        Modifier.noRippleClickable {
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.noRippleClickable {
                             passwordVisible = true
                         }
                     )

@@ -106,7 +106,6 @@ fun NewCustomerForm() {
             onValueChange = { email = it },
             regex = String::passwordRegex
         )
-
         CustomTextField(
             givenValue = "",
             placeHolder = "District",

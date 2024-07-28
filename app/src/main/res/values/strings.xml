@@ -1,11 +1,13 @@
 <resources>
     <string name="app_name">InsuranceApp</string>
     <string name="welcome_login">Welcome back, login to your account.</string>
+    <string name="reset_password">Don’t worry, enter your email address for resetting your password </string>
     <string name="enter_email">Enter your email</string>
     <string name="enter_password">Enter your password</string>
     <string name="stay_logged">Stay Logged</string>
     <string name="email_validation_error">Please enter a valid email address</string>
     <string name="login">Login</string>
+    <string name="send_link">Send Link</string>
     <string name="register_text">Welcome, register for save movies &amp; shows and more feature</string>
     <string name="password_error_title">Password must be;</string>
     <string name="password_error_one">at least 8 characters</string>
@@ -16,6 +18,8 @@
     <string name="hide_password">Hide password</string>
     <string name="correct">Correct</string>
     <string name="wrong">Wrong</string>
+    <string name="type">Type</string>
+    <string name="customer">Customer</string>
     <string name="search">Search</string>
     <string name="show_policies">Show Policies</string>
     <string name="something_was_wrong_on_register">Oops, Something went wrong on during %s!</string>
@@ -36,4 +40,5 @@
     <string name="field_surname">Please enter customer surname</string>
     <string name="field_phone">XXXX-XXX-XX-XX (Phone)</string>
     <string name="field_email">Please enter customer email</string>
+    
 </resources>
