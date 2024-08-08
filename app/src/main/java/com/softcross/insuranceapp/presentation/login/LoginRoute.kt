@@ -19,7 +19,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,17 +27,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softcross.insuranceapp.R
 import com.softcross.insuranceapp.common.CurrentUser
-import com.softcross.insuranceapp.common.ResponseState
+import com.softcross.insuranceapp.common.ScreenState
 import com.softcross.insuranceapp.common.extensions.emailRegex
 import com.softcross.insuranceapp.common.extensions.passwordRegex
 import com.softcross.insuranceapp.presentation.components.CustomPasswordTextField
@@ -46,7 +45,6 @@ import com.softcross.insuranceapp.presentation.components.CustomSnackbar
 import com.softcross.insuranceapp.presentation.components.CustomText
 import com.softcross.insuranceapp.presentation.components.CustomTextField
 import com.softcross.insuranceapp.presentation.components.LoadingTextButton
-import com.softcross.insuranceapp.presentation.theme.InsuranceAppTheme
 
 @Composable
 fun LoginRoute(
@@ -59,10 +57,14 @@ fun LoginRoute(
     var password by remember { mutableStateOf("") }
     var checked by remember { mutableStateOf(false) }
     var loading by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf("") }
+    var snackbarMessage by remember { mutableStateOf("") }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
-    LaunchedEffect(key1 = uiState) {
-        if (uiState is ResponseState.Success) {
+    when (uiState) {
+        is ScreenState.Loading -> {
+            snackbarMessage = ""
+        }
+        is ScreenState.Success -> {
             CurrentUser.setCurrentUser(uiState.data)
             if (checked) {
                 context.getSharedPreferences("logFile", Context.MODE_PRIVATE).edit()
@@ -71,14 +73,13 @@ fun LoginRoute(
                     .putString("userID", CurrentUser.getCurrentUserID()).apply()
             }
         }
-
-        if (uiState is ResponseState.Error) {
+        is ScreenState.Error -> {
             loading = false
-            errorMessage = uiState.message
+            snackbarMessage = uiState.message
         }
     }
 
-    Box {
+    Box{
         Column(
             modifier = modifier
                 .fillMaxSize()
@@ -99,7 +100,7 @@ fun LoginRoute(
                     givenValue = email,
                     placeHolder = stringResource(id = R.string.enter_email),
                     onValueChange = { email = it },
-                    errorMessage = stringResource(id = R.string.email_validation_error),
+                    errorMessage = stringResource(id = R.string.valid_email),
                     trailingIcon = {},
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     regex = String::emailRegex
@@ -113,6 +114,7 @@ fun LoginRoute(
                     isLoading = loading,
                     isEnable = email.emailRegex() && password.passwordRegex(),
                     onClick = {
+                        keyboardController?.hide()
                         loading = true
                         viewModel.loginUser(email, password)
                     },
@@ -148,20 +150,19 @@ fun LoginRoute(
                 }
             }
         }
-        if (errorMessage.isNotEmpty()) {
+        if (snackbarMessage.isNotEmpty()) {
             CustomSnackbar(
-                errorMessage = errorMessage,
+                errorMessage = snackbarMessage,
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(alignment = Alignment.BottomCenter)
             )
-            errorMessage = ""
         }
     }
 }
 
 @Composable
-fun LoginHeader() {
+private fun LoginHeader() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,

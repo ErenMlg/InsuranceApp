@@ -8,6 +8,8 @@ val LightGray = Color(0xFFEEF7FF)
 val LightWhite = Color(0xFFFFF7F1)
 val LightSubWhite = Color(0xFFFAF5F0)
 
+val SuccessColor = Color(0xFF6EACDA)
+
 val DarkRed = Color(0xFFD71313)
 val DarkBlack = Color(0xFF121212)
 val DarkGray = Color(0xFFA2A8AD)

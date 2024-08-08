@@ -19,7 +19,8 @@ private val DarkColorScheme = darkColorScheme(
     tertiary = DarkBlack,
     surfaceVariant = DarkWhite,
     background = DarkWhite,
-    error = DarkRed
+    error = DarkRed,
+    onSurface = SuccessColor
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -29,7 +30,8 @@ private val LightColorScheme = lightColorScheme(
     surfaceVariant = LightSubWhite,
     background = LightWhite,
     surface = LightRed,
-    error = LightRed
+    error = LightRed,
+    onSurface = SuccessColor
 )
 
 

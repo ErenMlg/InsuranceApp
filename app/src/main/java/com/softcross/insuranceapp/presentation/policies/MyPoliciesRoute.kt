@@ -27,7 +27,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.softcross.insuranceapp.R
+import com.softcross.insuranceapp.common.TempVariables
 import com.softcross.insuranceapp.common.extensions.passwordRegex
+import com.softcross.insuranceapp.domain.model.Policy
+import com.softcross.insuranceapp.domain.model.PolicyType
+import com.softcross.insuranceapp.domain.model.getPolicyByID
+import com.softcross.insuranceapp.domain.model.getPolicyStatusByCode
 import com.softcross.insuranceapp.presentation.components.CustomAnnotatedText
 import com.softcross.insuranceapp.presentation.components.CustomIconButton
 import com.softcross.insuranceapp.presentation.components.CustomText
@@ -88,16 +93,45 @@ fun MyPoliciesRoute(
                 onClick = { /*TODO*/ },
                 buttonText = R.string.search
             )
-            PoliciesResultContent()
+            PoliciesResultContent(
+                listOf(
+                    Policy(
+                        policyNo = "penatibus",
+                        customerNo = "errem",
+                        policyAgent = "principes",
+                        policyPrim = 1739,
+                        policyStatus = 'T',
+                        policyTypeCode = 2469,
+                        policyEnterDate = "eam",
+                        policyStartDate = null,
+                        policyEndDate = null
+                    ),
+                    Policy(
+                        policyNo = "penatibus",
+                        customerNo = "errem",
+                        policyAgent = "principes",
+                        policyPrim = 1739,
+                        policyStatus = 'P',
+                        policyTypeCode = 2469,
+                        policyEnterDate = "eam",
+                        policyStartDate = null,
+                        policyEndDate = "2024-12-12"
+                    ),
+                )
+            )
         }
     }
 }
 
 @Composable
-fun PoliciesResultContent() {
+fun PoliciesResultContent(
+    policyList: List<Policy>
+) {
     val id = "12341352365"
-    LazyColumn {
-        items(10) {
+    LazyColumn(
+        modifier = Modifier.padding(bottom = 16.dp)
+    ) {
+        items(policyList.size) { index ->
             Row(
                 modifier = Modifier
                     .padding(top = 8.dp)
@@ -113,51 +147,53 @@ fun PoliciesResultContent() {
                 ) {
                     CustomAnnotatedText(
                         header = "Police No: ",
-                        text = id,
+                        text = policyList[index].policyNo,
                         fontSize = 14.sp,
                         modifier = Modifier.padding(bottom = 2.dp, top = 8.dp)
                     )
                     CustomAnnotatedText(
                         header = "Customer: ",
-                        text = id,
+                        text = policyList[index].customerNo,
                         fontSize = 14.sp,
                         modifier = Modifier.padding(vertical = 2.dp)
                     )
                     CustomAnnotatedText(
                         header = "Type: ",
-                        text = id,
+                        text = getPolicyByID(policyList[index].policyTypeCode),
                         fontSize = 14.sp,
                         modifier = Modifier.padding(vertical = 2.dp)
                     )
                     CustomAnnotatedText(
                         header = "Status: ",
-                        text = id,
+                        text = getPolicyStatusByCode(policyList[index].policyStatus),
                         fontSize = 14.sp,
-                        modifier = Modifier.padding(bottom = 8.dp, top = 2.dp)
+                        modifier = Modifier.padding(vertical = 2.dp)
                     )
                     CustomAnnotatedText(
                         header = "Record Date: ",
-                        text = id,
+                        text = policyList[index].policyEnterDate,
                         fontSize = 14.sp,
-                        modifier = Modifier.padding(bottom = 8.dp, top = 2.dp)
+                        modifier = Modifier.padding(vertical = 2.dp)
                     )
-                    CustomAnnotatedText(
-                        header = "Start Date: ",
-                        text = id,
-                        fontSize = 14.sp,
-                        modifier = Modifier.padding(bottom = 8.dp, top = 2.dp)
-                    )
-                    CustomAnnotatedText(
-                        header = "End Date: ",
-                        text = id,
-                        fontSize = 14.sp,
-                        modifier = Modifier.padding(bottom = 8.dp, top = 2.dp)
-                    )
+                    if (policyList[index].policyStatus == 'P') {
+                        CustomAnnotatedText(
+                            header = "Start Date: ",
+                            text = policyList[index].policyStartDate ?: "Unkown",
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(vertical = 2.dp)
+                        )
+                        CustomAnnotatedText(
+                            header = "End Date: ",
+                            text = policyList[index].policyEndDate ?: "Unkown",
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(vertical = 2.dp)
+                        )
+                    }
                     CustomAnnotatedText(
                         header = "Price: ",
-                        text = id,
+                        text = policyList[index].policyPrim.toString().plus(" ₺"),
                         fontSize = 14.sp,
-                        modifier = Modifier.padding(bottom = 8.dp, top = 2.dp)
+                        modifier = Modifier.padding(vertical = 2.dp)
                     )
                 }
                 Column(

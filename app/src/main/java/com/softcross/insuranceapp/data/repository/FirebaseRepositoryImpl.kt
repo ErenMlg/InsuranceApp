@@ -2,7 +2,7 @@ package com.softcross.insuranceapp.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.softcross.insuranceapp.common.ResponseState
+import com.softcross.insuranceapp.common.ScreenState
 import com.softcross.insuranceapp.domain.model.User
 import com.softcross.insuranceapp.domain.model.UserType
 import com.softcross.insuranceapp.domain.repository.FirebaseRepository
@@ -17,16 +17,16 @@ class FirebaseRepositoryImpl @Inject constructor(
     private val firebaseFirestore: FirebaseFirestore
 ) : FirebaseRepository {
 
-    override fun loginUser(email: String, password: String): Flow<ResponseState<User>> {
+    override fun loginUser(email: String, password: String): Flow<ScreenState<User>> {
         return flow {
-            emit(ResponseState.Loading)
+            emit(ScreenState.Loading)
             val result = firebaseAuth.signInWithEmailAndPassword(email, password).await()
             result.user?.let {
                 val loggedUser = getUserDetailFromFirestore(it.uid)
-                emit(ResponseState.Success(loggedUser))
+                emit(ScreenState.Success(loggedUser))
             }
         }.catch {
-            emit(ResponseState.Error(it.message.toString()))
+            emit(ScreenState.Error(it.message.toString()))
         }
     }
 
@@ -36,17 +36,17 @@ class FirebaseRepositoryImpl @Inject constructor(
         name: String,
         surname: String,
         role: UserType
-    ): Flow<ResponseState<User>> {
+    ): Flow<ScreenState<User>> {
         return flow {
-            emit(ResponseState.Loading)
+            emit(ScreenState.Loading)
             val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
             result.user?.let {
                 val userModel = User(result.user!!.uid, name, surname, role)
                 addUserDetailsToFirestore(userModel)
-                emit(ResponseState.Success(userModel))
+                emit(ScreenState.Success(userModel))
             }
         }.catch {
-            emit(ResponseState.Error(it.message.toString()))
+            emit(ScreenState.Error(it.message.toString()))
         }
     }
 
@@ -68,9 +68,9 @@ class FirebaseRepositoryImpl @Inject constructor(
         if (firestoreDoc.data != null) {
             val name = firestoreDoc.data?.get("name").toString()
             val surname = firestoreDoc.data?.get("surname").toString()
-            val role = when (firestoreDoc.data?.get("role").toString().toInt()) {
-                1 -> UserType.ADMIN
-                2 -> UserType.USER
+            val role = when (firestoreDoc.data?.get("role").toString()) {
+                "admin" -> UserType.ADMIN
+                "user" -> UserType.USER
                 else -> UserType.UNSPECIFIED
             }
             return User(userID, name, surname, role)
@@ -79,14 +79,14 @@ class FirebaseRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun sendResetPasswordEmail(email: String): Flow<ResponseState<Boolean>> {
+    override suspend fun sendResetPasswordEmail(email: String): Flow<ScreenState<Boolean>> {
         return flow {
-            emit(ResponseState.Loading)
+            emit(ScreenState.Loading)
             try {
                 firebaseAuth.sendPasswordResetEmail(email).await()
-                emit(ResponseState.Success(true))
+                emit(ScreenState.Success(true))
             } catch (e: Exception) {
-                emit(ResponseState.Error(e.message.toString()))
+                emit(ScreenState.Error(e.message.toString()))
             }
         }
     }

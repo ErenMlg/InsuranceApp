@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.konan.properties.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -21,6 +23,18 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildFeatures {
+            buildConfig = true
+        }
+
+        val properties = Properties()
+        properties.load(project.rootProject.file("local.properties").inputStream())
+
+        buildConfigField("String", "API_URL", "\"${properties.getProperty("localHost")}\"")
+        buildConfigField("String", "CITY_API_URL", "\"https://turkiyeapi.dev/api/v1/\"")
+        buildConfigField("String", "CAR_PROPERTIES_API_URL", "\"https://carapi.app/api/\"")
+
     }
 
     buildTypes {
@@ -77,4 +91,11 @@ dependencies {
     //Firebase
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.firestore.ktx)
+    //Retrofit
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.okhttp3.logging.interceptor)
+    //Paging
+    implementation(libs.androidx.paging.runtime.ktx)
+    implementation(libs.androidx.paging.compose)
 }

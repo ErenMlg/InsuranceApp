@@ -2,12 +2,16 @@
     <string name="app_name">InsuranceApp</string>
     <string name="welcome_login">Welcome back, login to your account.</string>
     <string name="reset_password">Don’t worry, enter your email address for resetting your password </string>
-    <string name="enter_email">Enter your email</string>
-    <string name="enter_password">Enter your password</string>
+    <string name="enter_email">Email</string>
+    <string name="enter_password">Password</string>
     <string name="stay_logged">Stay Logged</string>
-    <string name="email_validation_error">Please enter a valid email address</string>
+    <string name="valid_email">Please enter a valid email address</string>
     <string name="login">Login</string>
+    <string name="valid_name">Name should min 2 letters</string>
+    <string name="valid_surname">Surname should min 2 letters</string>
     <string name="send_link">Send Link</string>
+    <string name="success_send_email">Successfully sended email, please check your inbox</string>
+    <string name="check_email_spam">If you haven\'t received the email, please check your spam folder or ensure that your email address is correct.</string>
     <string name="register_text">Welcome, register for save movies &amp; shows and more feature</string>
     <string name="password_error_title">Password must be;</string>
     <string name="password_error_one">at least 8 characters</string>
@@ -35,10 +39,12 @@
     <string name="my_payments_text">Show my all payments, policies, customers, budgets and sales</string>
     <string name="field_just_id">ID Number</string>
     <string name="field_just_name">Name Surname</string>
-    <string name="field_id_number">Please enter customer ID Number</string>
-    <string name="field_name">Please enter customer name</string>
-    <string name="field_surname">Please enter customer surname</string>
-    <string name="field_phone">XXXX-XXX-XX-XX (Phone)</string>
-    <string name="field_email">Please enter customer email</string>
-    
+    <string name="field_id_number">ID Number</string>
+    <string name="field_name">Name</string>
+    <string name="field_surname">Surname</string>
+    <string name="field_phone">Phone</string>
+    <string name="field_email">Email</string>
+    <string name="valid_id">Please enter a valid id number</string>
+    <string name="valid_phone">Please enter a valid phone number</string>
+    <string name="take_price">Get Price</string>
 </resources>
