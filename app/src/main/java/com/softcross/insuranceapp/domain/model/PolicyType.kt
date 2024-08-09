@@ -29,3 +29,13 @@ fun getPolicyByID(id: Int): String {
         else -> "Unknown"
     }
 }
+
+fun getPolicyByName(name:String) : PolicyType{
+    return when(name){
+        "Traffic" -> PolicyType.TRAFFIC
+        "Kasko" -> PolicyType.KASKO
+        "Health" -> PolicyType.HEALTH
+        "DASK" -> PolicyType.DASK
+        else -> PolicyType.UNSELECTED
+    }
+}

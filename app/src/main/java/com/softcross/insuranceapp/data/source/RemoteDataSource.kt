@@ -2,24 +2,21 @@ package com.softcross.insuranceapp.data.source
 
 import com.softcross.insuranceapp.common.NetworkResponseState
 import com.softcross.insuranceapp.data.dto.address.AddressResponseDto
-import com.softcross.insuranceapp.data.dto.traffic_kasko.TrafficKaskoResponse
-import com.softcross.insuranceapp.data.dto.customer.CustomerDto
 import com.softcross.insuranceapp.data.dto.car_properties.MakesResponse
 import com.softcross.insuranceapp.data.dto.car_properties.ModelsResponse
+import com.softcross.insuranceapp.data.dto.customer.CustomerDto
 import com.softcross.insuranceapp.data.dto.customer.CustomerResponse
 import com.softcross.insuranceapp.data.dto.dask.DaskDto
-import com.softcross.insuranceapp.data.dto.dask.DaskResponse
 import com.softcross.insuranceapp.data.dto.health.HealthDto
-import com.softcross.insuranceapp.data.dto.health.HealthResponse
 import com.softcross.insuranceapp.data.dto.policy.PolicyDto
 import com.softcross.insuranceapp.data.dto.policy.PolicyResponse
 import com.softcross.insuranceapp.data.dto.traffic_kasko.TrafficKaskoDto
-import com.softcross.insuranceapp.domain.model.Traffic
 import com.softcross.insuranceapp.domain.model.Customer
 import com.softcross.insuranceapp.domain.model.Dask
 import com.softcross.insuranceapp.domain.model.Health
 import com.softcross.insuranceapp.domain.model.Kasko
 import com.softcross.insuranceapp.domain.model.Policy
+import com.softcross.insuranceapp.domain.model.Traffic
 import kotlinx.coroutines.flow.Flow
 
 interface RemoteDataSource {
@@ -59,6 +56,11 @@ interface RemoteDataSource {
 
     fun getAllPolicies(): Flow<NetworkResponseState<PolicyResponse>>
 
+    fun searchPolicy(
+        idKey: String
+    ): Flow<NetworkResponseState<PolicyResponse>>
+
+
     // Policy Types
 
     fun addTraffic(traffic: Traffic): Flow<NetworkResponseState<TrafficKaskoDto>>
@@ -68,4 +70,6 @@ interface RemoteDataSource {
     fun addHealth(health: Health): Flow<NetworkResponseState<HealthDto>>
 
     fun addDask(dask: Dask): Flow<NetworkResponseState<DaskDto>>
+
+
 }

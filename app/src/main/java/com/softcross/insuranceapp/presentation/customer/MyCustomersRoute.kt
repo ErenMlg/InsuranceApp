@@ -135,7 +135,7 @@ fun CustomerResultContent(customers: List<Customer>, onDelete: (String) -> Unit)
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Column(
-                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
+                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp).weight(0.8f),
                     verticalArrangement = Arrangement.SpaceEvenly
                 ) {
                     CustomAnnotatedText(
@@ -164,7 +164,7 @@ fun CustomerResultContent(customers: List<Customer>, onDelete: (String) -> Unit)
                     )
                 }
                 Column(
-                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
+                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp).weight(0.2f),
                     verticalArrangement = Arrangement.SpaceEvenly,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {

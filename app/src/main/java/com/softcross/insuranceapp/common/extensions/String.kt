@@ -46,7 +46,7 @@ fun String.nameSurnameRegex(): Boolean {
         "^[a-zA-Z]{2,}\$"
     )
     return if (this.isNotEmpty()) {
-        return pattern.matcher(this).matches()
+        pattern.matcher(this).matches()
     } else {
         false
     }
@@ -63,7 +63,7 @@ fun String.plateRegex(): Boolean {
     3 harf varsa 2 rakam olur.
      */
     return if (this.isNotEmpty()) {
-        return pattern.matcher(this).matches()
+        pattern.matcher(this).matches()
     } else {
         false
     }
@@ -71,7 +71,7 @@ fun String.plateRegex(): Boolean {
 
 fun String.plateCodeRegex(): Boolean {
     return if (this.isNotEmpty()) {
-        return this.toInt() in 1..81
+        this.toInt() in 1..81
     } else {
         false
     }
@@ -82,7 +82,7 @@ fun String.motorNumberRegex(): Boolean {
     // Valid "A1B2-C3D4"
     // Invalid "123/456"
     return if (this.isNotEmpty()) {
-        return pattern.matcher(this).matches()
+        pattern.matcher(this).matches()
     } else {
         false
     }
@@ -93,7 +93,7 @@ fun String.chassisNumberRegex(): Boolean {
     // Valid 123456789ABCDEFG
     // Invalid 123456789*BCDEFG
     return if (this.isNotEmpty()) {
-        return pattern.matcher(this).matches()
+        pattern.matcher(this).matches()
     } else {
         false
     }
@@ -104,7 +104,7 @@ fun String.passwordRegex(): Boolean {
         "^(?=.*[0-9])(?=\\S+\$)(?=.*[a-z])(?=.*[A-Z]).{8,}\$"
     )
     return if (this.isNotEmpty()) {
-        return pattern.matcher(this).matches()
+        pattern.matcher(this).matches()
     } else {
         false
     }
@@ -115,7 +115,38 @@ fun String.uavtRegex(): Boolean {
         "^[0-9]{10}\$"
     )
     return if (this.isNotEmpty()) {
-        return pattern.matcher(this).matches()
+        pattern.matcher(this).matches()
+    } else {
+        false
+    }
+}
+
+fun String.creditCardNumberRegex(): Boolean {
+    val pattern = Pattern.compile(
+        ("^[0-9]{16}$")
+    )
+    return if (this.isNotEmpty()) {
+        pattern.matcher(this).matches()
+    } else {
+        false
+    }
+}
+
+fun String.creditCardDateRegex(): Boolean {
+    val pattern = Pattern.compile(
+        "^(0[1-9]|1[0-2])\\/?([0-9]{4}|[0-9]{2})\$"
+    )
+    return if (this.isNotEmpty()) {
+        pattern.matcher(this).matches()
+    } else {
+        false
+    }
+}
+
+fun String.cvcRegex(): Boolean {
+    val pattern = Pattern.compile("^[0-9]{3,4}$")
+    return if (this.isNotEmpty()) {
+        pattern.matcher(this).matches()
     } else {
         false
     }
@@ -147,5 +178,16 @@ fun String.calculateAge(): Long {
     } catch (e: Exception) {
         println(e.message)
         return -1
+    }
+}
+
+fun String.dateTimeToFormattedDate(): String {
+    try {
+        val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
+        val outputFormatter = DateTimeFormatter.ofPattern("d MMM yyyy", Locale.ENGLISH)
+        val date = LocalDate.parse(this, inputFormatter)
+        return date.format(outputFormatter)
+    } catch (e: Exception) {
+        return "N/A"
     }
 }

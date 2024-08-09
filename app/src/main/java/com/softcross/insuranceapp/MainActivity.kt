@@ -17,6 +17,8 @@ import com.softcross.insuranceapp.presentation.customer.new_customer.NewCustomer
 import com.softcross.insuranceapp.presentation.customer.new_customer.NewCustomerRoutePreview
 import com.softcross.insuranceapp.presentation.login.LoginRoute
 import com.softcross.insuranceapp.presentation.login.reset_password.ResetPasswordRoute
+import com.softcross.insuranceapp.presentation.payments.new_payment.NewPaymentRoute
+import com.softcross.insuranceapp.presentation.policies.MyPoliciesRoute
 import com.softcross.insuranceapp.presentation.policies.new_policy.NewPolicyRoute
 import com.softcross.insuranceapp.presentation.theme.InsuranceAppTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,7 +36,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     containerColor = MaterialTheme.colorScheme.background
                 ) { innerPadding ->
-                    NewPolicyRoute(Modifier.padding(innerPadding))
+                    NewPaymentRoute(Modifier.padding(innerPadding))
                 }
             }
         }

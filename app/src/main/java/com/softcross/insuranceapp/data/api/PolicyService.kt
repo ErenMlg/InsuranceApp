@@ -22,4 +22,9 @@ interface PolicyService {
 
     @GET("policies")
     suspend fun getAllPolicies(): PolicyResponse
+
+    @GET("policies/customerNo={id}")
+    suspend fun getSearchedPolicies(
+        @Path("id") idKey: String
+    ): PolicyResponse
 }

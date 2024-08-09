@@ -29,6 +29,7 @@
     <string name="something_was_wrong_on_register">Oops, Something went wrong on during %s!</string>
     <string name="forgot_password">Forgot your password?</string>
     <string name="new_customer">New Customer</string>
+    <string name="payment">Payment</string>
     <string name="new_policy">New Policy</string>
     <string name="customers_info_text">Please enter ID or Name-Surname for search:</string>
     <string name="my_customers">My Customers</string>
@@ -44,7 +45,17 @@
     <string name="field_surname">Surname</string>
     <string name="field_phone">Phone</string>
     <string name="field_email">Email</string>
+    <string name="field_credit_card_number">Credit Cart Number</string>
+    <string name="field_card_date">Credit Card Date</string>
+    <string name="field_card_name">Credit Card Name</string>
+    <string name="field_card_cvc">Credit Card CVC</string>
+    <string name="field_policy_no">Policy No</string>
     <string name="valid_id">Please enter a valid id number</string>
     <string name="valid_phone">Please enter a valid phone number</string>
     <string name="take_price">Get Price</string>
+    <string name="pay">Pay</string>
+    <string name="valid_credit_card">Please enter a valid credit card number</string>
+    <string name="valid_card_date">Please enter a valid credit card date</string>
+    <string name="valid_card_name">Please enter a valid credit card name</string>
+    <string name="valid_card_cvc">Please enter a valid credit card cvc</string>
 </resources>

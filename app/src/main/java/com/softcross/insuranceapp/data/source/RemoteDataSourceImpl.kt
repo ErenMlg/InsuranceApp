@@ -254,4 +254,18 @@ class RemoteDataSourceImpl @Inject constructor(
         }
     }
 
+    override fun searchPolicy(
+        idKey: String
+    ): Flow<NetworkResponseState<PolicyResponse>> {
+        return flow {
+            emit(NetworkResponseState.Loading)
+            try {
+                val result = policyService.getSearchedPolicies(idKey)
+                emit(NetworkResponseState.Success(result))
+            } catch (e: Exception) {
+                emit(NetworkResponseState.Error(e.httpErrorHandle()))
+            }
+        }
+    }
+
 }

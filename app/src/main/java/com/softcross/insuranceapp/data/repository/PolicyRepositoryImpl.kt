@@ -4,6 +4,7 @@ import com.softcross.insuranceapp.common.NetworkResponseState
 import com.softcross.insuranceapp.common.extensions.mapResponse
 import com.softcross.insuranceapp.common.extensions.toPolicy
 import com.softcross.insuranceapp.data.source.RemoteDataSource
+import com.softcross.insuranceapp.domain.model.Customer
 import com.softcross.insuranceapp.domain.model.Policy
 import com.softcross.insuranceapp.domain.repository.PolicyRepository
 import kotlinx.coroutines.flow.Flow
@@ -27,6 +28,9 @@ class PolicyRepositoryImpl @Inject constructor(
     override fun getPolicies(): Flow<NetworkResponseState<List<Policy>>> =
         remoteDataSource.getAllPolicies()
             .map { it.mapResponse { data.map { data -> data.toPolicy() } } }
+
+    override fun searchPolicy(idKey: String): Flow<NetworkResponseState<List<Policy>>> =
+        remoteDataSource.searchPolicy(idKey).map { it.mapResponse { data.map { data -> data.toPolicy() } } }
 
 
 }
