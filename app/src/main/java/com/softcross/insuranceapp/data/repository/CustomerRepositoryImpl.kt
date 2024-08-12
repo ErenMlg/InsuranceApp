@@ -20,6 +20,11 @@ class CustomerRepositoryImpl @Inject constructor(
             it.mapResponse { data.map { data -> data.toCustomer() } }
         }
 
+    override fun updateCustomer(customer: Customer): Flow<NetworkResponseState<Customer>> =
+        remoteDataSource.updateCustomer(customer).map {
+            it.mapResponse { toCustomer() }
+        }
+
     override fun searchCustomer(
         nameKey: String,
         idKey: String
@@ -33,5 +38,15 @@ class CustomerRepositoryImpl @Inject constructor(
 
     override fun deleteCustomer(id: String): Flow<NetworkResponseState<Unit>> =
         remoteDataSource.deleteCustomer(id)
+
+    override fun getUserCustomers(userID: String): Flow<NetworkResponseState<List<Customer>>> =
+        remoteDataSource.getUserCustomers(userID).map {
+            it.mapResponse { data.map { data -> data.toCustomer() } }
+        }
+
+    override fun getCustomer(customerID: String): Flow<NetworkResponseState<Customer>> =
+        remoteDataSource.getCustomerById(customerID).map {
+            it.mapResponse { toCustomer() }
+        }
 
 }

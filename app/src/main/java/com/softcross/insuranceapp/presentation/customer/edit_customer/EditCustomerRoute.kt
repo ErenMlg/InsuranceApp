@@ -1,4 +1,4 @@
-package com.softcross.insuranceapp.presentation.customer.new_customer
+package com.softcross.insuranceapp.presentation.customer.edit_customer
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +30,7 @@ import com.softcross.insuranceapp.R
 import com.softcross.insuranceapp.common.AllLocations
 import com.softcross.insuranceapp.common.PhoneNumberVisualTransformation
 import com.softcross.insuranceapp.common.ScreenState
+import com.softcross.insuranceapp.common.extensions.dateTimeToDate
 import com.softcross.insuranceapp.common.extensions.emailRegex
 import com.softcross.insuranceapp.common.extensions.idRegex
 import com.softcross.insuranceapp.common.extensions.nameSurnameRegex
@@ -46,14 +47,14 @@ import com.softcross.insuranceapp.presentation.components.LoadingIconButton
 import kotlinx.coroutines.delay
 
 @Composable
-fun NewCustomerRoute(
-    viewModel: NewCustomerViewModel = hiltViewModel(),
+fun EditCustomerRoute(
+    viewModel: EditCustomerViewModel = hiltViewModel(),
     onHome: () -> Unit
 ) {
-
     var snackbarMessage by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
     val uiState = viewModel.newCustomerState.value
+    val oldCustomerState = viewModel.oldCustomerState.value
 
     LaunchedEffect(key1 = snackbarMessage) {
         if (snackbarMessage.isNotEmpty() && !isError) {
@@ -66,10 +67,13 @@ fun NewCustomerRoute(
         is ScreenState.Loading -> {
             snackbarMessage = ""
         }
+
         is ScreenState.Success -> {
             isError = false
             snackbarMessage = stringResource(id = R.string.success_add_customer)
+
         }
+
         is ScreenState.Error -> {
             isError = true
             snackbarMessage = uiState.message
@@ -90,9 +94,13 @@ fun NewCustomerRoute(
                 fontSize = 18.sp,
                 modifier = Modifier.padding(16.dp)
             )
-            NewCustomerForm({
-                viewModel.addCustomer(it)
-            }, AllLocations.getLocations())
+            if (oldCustomerState is ScreenState.Success) {
+                NewCustomerForm(
+                    oldCustomer = oldCustomerState.data,
+                    onCreate = { viewModel.updateCustomer(it) },
+                    provinceList = AllLocations.getLocations()
+                )
+            }
         }
         if (snackbarMessage.isNotEmpty()) {
             CustomSnackbar(
@@ -108,17 +116,21 @@ fun NewCustomerRoute(
 
 @Composable
 fun NewCustomerForm(
+    oldCustomer: Customer,
     onCreate: (Customer) -> Unit,
     provinceList: List<Province>
 ) {
-    var idNumber by remember { mutableStateOf("") }
-    var name by remember { mutableStateOf("") }
-    var surname by remember { mutableStateOf("") }
-    var birthdate by remember { mutableStateOf("") }
-    var city by remember { mutableStateOf<Province?>(null) }
-    var district by remember { mutableStateOf<District?>(null) }
-    var phoneNumber by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
+    var idNumber by remember { mutableStateOf(oldCustomer.id) }
+    var name by remember { mutableStateOf(oldCustomer.name) }
+    var surname by remember { mutableStateOf(oldCustomer.surname) }
+    var birthdate by remember { mutableStateOf(oldCustomer.birthdate) }
+    var city by remember {
+        mutableStateOf<Province?>(
+            AllLocations.getLocations().find { it.name == oldCustomer.city })
+    }
+    var district by remember { mutableStateOf<District?>(city?.districts?.find { it.name == oldCustomer.district }) }
+    var phoneNumber by remember { mutableStateOf(oldCustomer.phone) }
+    var email by remember { mutableStateOf(oldCustomer.email) }
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Column(
@@ -158,7 +170,8 @@ fun NewCustomerForm(
         }
         CustomDateTimePicker(
             placeHolder = "Birthday",
-            onDateSelected = { birthdate = it }
+            onDateSelected = { birthdate = it },
+            selectedDate = birthdate.dateTimeToDate()
         )
         CustomSelectionDialog(
             data = provinceList.map { it.name },
@@ -166,7 +179,8 @@ fun NewCustomerForm(
             onDataSelected = { data ->
                 city = provinceList.find { it.name == data }
             },
-            title = "Please select a city"
+            title = "Please select a city",
+            selected = city?.name ?: "Unknown"
         )
         CustomSelectionDialog(
             data = city?.districts?.map { it.name } ?: emptyList(),
@@ -175,7 +189,8 @@ fun NewCustomerForm(
                 district = city?.districts?.find { district -> district.name == data }
             },
             enabled = city != null,
-            title = "Please select a district"
+            title = "Please select a district",
+            selected = district?.name ?: "Unknown"
         )
         CustomTextField(
             givenValue = phoneNumber,

@@ -1,6 +1,7 @@
 package com.softcross.insuranceapp.presentation.policies.new_policy.policy_forms
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,6 +10,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -17,20 +19,24 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalSavedStateRegistryOwner
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.SavedStateHandle
 import com.softcross.insuranceapp.R
+import com.softcross.insuranceapp.common.AllMakes
 import com.softcross.insuranceapp.common.ScreenState
-import com.softcross.insuranceapp.common.TempVariables
 import com.softcross.insuranceapp.common.extensions.chassisNumberRegex
 import com.softcross.insuranceapp.common.extensions.motorNumberRegex
 import com.softcross.insuranceapp.common.extensions.passwordRegex
 import com.softcross.insuranceapp.common.extensions.plateCodeRegex
 import com.softcross.insuranceapp.common.extensions.plateRegex
 import com.softcross.insuranceapp.domain.model.Kasko
-import com.softcross.insuranceapp.domain.model.Models
+import com.softcross.insuranceapp.domain.model.Model
 import com.softcross.insuranceapp.domain.model.Policy
 import com.softcross.insuranceapp.domain.model.PolicyType
 import com.softcross.insuranceapp.presentation.components.CustomLargeIconButton
@@ -42,14 +48,15 @@ import java.time.Year
 
 @Composable
 fun KaskoPolicyForm(
-    modelState: ScreenState<List<Models>>,
+    modelState: ScreenState<List<Model>>,
     modelSearch: (Int, Int) -> Unit,
     onTakeOfferClick: (Int, Int) -> Unit,
-    onSetPolicyClick: (Policy) -> Unit,
+    onSetPolicyClick: () -> Unit,
     onKaskoCreate: (Kasko) -> Unit,
     addedPolicy: Policy?,
-) {
-    val makesList = TempVariables.makeList
+
+    ) {
+    val makesList = AllMakes.getMakeList()
     var plateCode by remember { mutableStateOf("") }
     var plateNumber by remember { mutableStateOf("") }
     var motorNumber by remember { mutableStateOf("") }
@@ -61,6 +68,11 @@ fun KaskoPolicyForm(
     val selectedMakeID by remember {
         derivedStateOf { makesList.find { makes -> makes.name == selectedMake }?.id ?: 0 }
     }
+    println(
+        "selectedMakeID: $selectedMakeID, selectedYear: $selectedYear, selectedModel: $selectedModel" +
+                "plateCode: $plateCode, plateNumber: $plateNumber, motorNumber: $motorNumber, chassisNumber: $chassisNumber"
+                + "price: $price"
+    )
 
     LaunchedEffect(key1 = selectedMakeID, key2 = selectedYear) {
         selectedModel = ""
@@ -126,7 +138,7 @@ fun KaskoPolicyForm(
                 title = "Please select a mark"
             )
             CustomSelectionDialog(
-                data = TempVariables.yearList,
+                data = listOf("2015", "2016", "2017", "2018", "2019", "2020"),
                 placeHolder = "Year",
                 onDataSelected = {
                     selectedYear = it.toInt()
@@ -192,7 +204,7 @@ fun KaskoPolicyForm(
                 )
                 CustomLargeIconButton(
                     isEnable = addedPolicy != null,
-                    onClick = { },
+                    onClick = onSetPolicyClick,
                     buttonText = R.string.new_policy,
                     id = R.drawable.icon_add_policy,
                     modifier = Modifier

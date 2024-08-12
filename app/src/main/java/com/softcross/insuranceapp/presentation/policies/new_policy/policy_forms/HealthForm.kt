@@ -1,6 +1,7 @@
 package com.softcross.insuranceapp.presentation.policies.new_policy.policy_forms
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,6 +40,7 @@ import com.softcross.insuranceapp.presentation.components.CustomText
 fun HealthPolicyForm(
     addedPolicy: Policy?,
     onTakeOfferClick: (Int, Int) -> Unit,
+    onSetPolicyClick: () -> Unit,
     onHealthCreate: (Health) -> Unit
 ) {
 
@@ -65,7 +69,7 @@ fun HealthPolicyForm(
         }
     }
 
-    Column {
+    Column{
         CustomText(
             text = "Health",
             fontFamilyID = R.font.poppins_semi_bold,
@@ -114,7 +118,7 @@ fun HealthPolicyForm(
                 )
                 CustomLargeIconButton(
                     isEnable = addedPolicy != null,
-                    onClick = { },
+                    onClick = onSetPolicyClick,
                     buttonText = R.string.new_policy,
                     id = R.drawable.icon_add_policy,
                     modifier = Modifier

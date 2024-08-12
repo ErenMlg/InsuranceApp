@@ -10,8 +10,7 @@ import com.softcross.insuranceapp.domain.model.Dask
 import com.softcross.insuranceapp.domain.model.Health
 import com.softcross.insuranceapp.domain.model.Kasko
 import com.softcross.insuranceapp.domain.model.Traffic
-import com.softcross.insuranceapp.domain.model.Makes
-import com.softcross.insuranceapp.domain.model.Models
+import com.softcross.insuranceapp.domain.model.Model
 import com.softcross.insuranceapp.domain.model.Policy
 import com.softcross.insuranceapp.domain.repository.PolicyTypeRepository
 import com.softcross.insuranceapp.domain.repository.PolicyRepository
@@ -28,21 +27,14 @@ class NewPolicyViewModel @Inject constructor(
     private val policyTypeRepository: PolicyTypeRepository,
 ) : ViewModel() {
 
-    private val _makesState = mutableStateOf<ScreenState<List<Makes>>>(ScreenState.Loading)
-    val makesState: State<ScreenState<List<Makes>>> = _makesState
-
-    private val _modelsState = mutableStateOf<ScreenState<List<Models>>>(ScreenState.Loading)
-    val modelState: State<ScreenState<List<Models>>> = _modelsState
+    private val _modelState = mutableStateOf<ScreenState<List<Model>>>(ScreenState.Loading)
+    val modelState: State<ScreenState<List<Model>>> = _modelState
 
     private val _policyState = mutableStateOf<ScreenState<Policy>>(ScreenState.Loading)
     val policyState: State<ScreenState<Policy>> = _policyState
 
     private val _typeState = mutableStateOf<ScreenState<Boolean>>(ScreenState.Loading)
     val typeState: State<ScreenState<Boolean>> = _typeState
-
-    init {
-        getMakes()
-    }
 
     fun addPolicy(policy: Policy) = viewModelScope.launch {
         policyRepository.addPolicy(policy).collectLatest { response ->
@@ -61,10 +53,6 @@ class NewPolicyViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    fun updatePolicy(policy: Policy) = viewModelScope.launch {
-
     }
 
     fun addTraffic(traffic: Traffic) = viewModelScope.launch {
@@ -99,41 +87,22 @@ class NewPolicyViewModel @Inject constructor(
         }
     }
 
-    private fun getMakes() = viewModelScope.launch {
-        vehicleAndLocationRepository.getCarMakes().collectLatest { response ->
-            when (response) {
-                is NetworkResponseState.Success -> {
-                    _makesState.value = ScreenState.Success(response.result)
-                }
-
-                is NetworkResponseState.Error -> {
-                    _makesState.value =
-                        ScreenState.Error(response.exception.message ?: "An error occurred")
-                }
-
-                is NetworkResponseState.Loading -> {
-                    _makesState.value = ScreenState.Loading
-                }
-            }
-        }
-    }
-
     fun getModels(makeId: Int, year: Int) = viewModelScope.launch {
         vehicleAndLocationRepository.getCarModels(year, makeId).collectLatest { response ->
             when (response) {
                 is NetworkResponseState.Success -> {
-                    _modelsState.value = ScreenState.Success(response.result)
+                    _modelState.value = ScreenState.Success(response.result)
                     println("Models: ${response.result}")
                 }
 
                 is NetworkResponseState.Error -> {
-                    _modelsState.value =
+                    _modelState.value =
                         ScreenState.Error(response.exception.message ?: "An error occurred")
                     println("Error: ${response.exception.message}")
                 }
 
                 is NetworkResponseState.Loading -> {
-                    _modelsState.value = ScreenState.Loading
+                    _modelState.value = ScreenState.Loading
                 }
             }
         }

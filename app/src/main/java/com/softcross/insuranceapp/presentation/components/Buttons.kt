@@ -33,6 +33,7 @@ import com.softcross.insuranceapp.R
 
 @Composable
 fun LoadingTextButton(
+    modifier: Modifier = Modifier,
     isLoading: Boolean,
     isEnable: Boolean,
     onClick: () -> Unit,
@@ -45,7 +46,7 @@ fun LoadingTextButton(
             containerColor = MaterialTheme.colorScheme.primary
         ),
         shape = RoundedCornerShape(8.dp),
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
             .height(50.dp)
@@ -99,8 +100,8 @@ fun CustomIconButton(
 @Composable
 fun LoadingIconButton(
     modifier: Modifier = Modifier,
-    isLoading: Boolean,
-    isEnable: Boolean,
+    isLoading: Boolean = false,
+    isEnable: Boolean = true,
     onClick: () -> Unit,
     @DrawableRes id: Int,
     @StringRes buttonText: Int

@@ -58,4 +58,8 @@
     <string name="valid_card_date">Please enter a valid credit card date</string>
     <string name="valid_card_name">Please enter a valid credit card name</string>
     <string name="valid_card_cvc">Please enter a valid credit card cvc</string>
+    <string name="success_add_customer">Customer added successfully</string>
+    <string name="success_add_policy">Policy added successfully</string>
+    <string name="success_delete_customer">Customer deleted successfully</string>
+    <string name="please_select_user_and_type">Please select a policy type and customer</string>
 </resources>

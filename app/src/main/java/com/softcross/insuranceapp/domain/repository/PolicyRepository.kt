@@ -15,6 +15,8 @@ interface PolicyRepository {
 
     fun getPolicies(): Flow<NetworkResponseState<List<Policy>>>
 
+    fun getPolicyById(id: String): Flow<NetworkResponseState<Policy>>
+
     fun searchPolicy(
         idKey: String = ""
     ): Flow<NetworkResponseState<List<Policy>>>

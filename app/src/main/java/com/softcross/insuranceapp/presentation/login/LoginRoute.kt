@@ -39,6 +39,7 @@ import com.softcross.insuranceapp.R
 import com.softcross.insuranceapp.common.CurrentUser
 import com.softcross.insuranceapp.common.ScreenState
 import com.softcross.insuranceapp.common.extensions.emailRegex
+import com.softcross.insuranceapp.common.extensions.noRippleClickable
 import com.softcross.insuranceapp.common.extensions.passwordRegex
 import com.softcross.insuranceapp.presentation.components.CustomPasswordTextField
 import com.softcross.insuranceapp.presentation.components.CustomSnackbar
@@ -49,7 +50,9 @@ import com.softcross.insuranceapp.presentation.components.LoadingTextButton
 @Composable
 fun LoginRoute(
     modifier: Modifier = Modifier,
-    viewModel: LoginViewModel = hiltViewModel()
+    viewModel: LoginViewModel = hiltViewModel(),
+    onLogin: () -> Unit,
+    onResetPassword: () -> Unit
 ) {
     val uiState = viewModel.loginUiState.value
     val context = LocalContext.current
@@ -72,6 +75,7 @@ fun LoginRoute(
                 context.getSharedPreferences("logFile", Context.MODE_PRIVATE).edit()
                     .putString("userID", CurrentUser.getCurrentUserID()).apply()
             }
+            onLogin()
         }
         is ScreenState.Error -> {
             loading = false
@@ -144,6 +148,7 @@ fun LoginRoute(
                         text = stringResource(id = R.string.forgot_password),
                         textAlign = TextAlign.End,
                         modifier = Modifier
+                            .noRippleClickable { onResetPassword() }
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)
                     )

@@ -1,6 +1,7 @@
 package com.softcross.insuranceapp.presentation.policies.new_policy.policy_forms
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,13 +18,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.softcross.insuranceapp.R
+import com.softcross.insuranceapp.common.AllMakes
 import com.softcross.insuranceapp.common.ScreenState
-import com.softcross.insuranceapp.common.TempVariables
 import com.softcross.insuranceapp.common.extensions.calculateAge
 import com.softcross.insuranceapp.common.extensions.chassisNumberRegex
 import com.softcross.insuranceapp.common.extensions.motorNumberRegex
@@ -31,7 +34,7 @@ import com.softcross.insuranceapp.common.extensions.passwordRegex
 import com.softcross.insuranceapp.common.extensions.plateCodeRegex
 import com.softcross.insuranceapp.common.extensions.plateRegex
 import com.softcross.insuranceapp.domain.model.Customer
-import com.softcross.insuranceapp.domain.model.Models
+import com.softcross.insuranceapp.domain.model.Model
 import com.softcross.insuranceapp.domain.model.Policy
 import com.softcross.insuranceapp.domain.model.PolicyType
 import com.softcross.insuranceapp.domain.model.Traffic
@@ -43,15 +46,15 @@ import java.time.Year
 
 @Composable
 fun TrafficPolicyForm(
-    modelState: ScreenState<List<Models>>,
+    modelState: ScreenState<List<Model>>,
     customer: Customer,
     modelSearch: (Int, Int) -> Unit,
     onTakeOfferClick: (Int, Int) -> Unit,
-    onSetPolicyClick: (Policy) -> Unit,
+    onSetPolicyClick: () -> Unit,
     onCarCreate: (Traffic) -> Unit,
     addedPolicy: Policy?,
 ) {
-    val makesList = TempVariables.makeList
+    val makesList = AllMakes.getMakeList()
     var plateCode by remember { mutableStateOf("") }
     var plateNumber by remember { mutableStateOf("") }
     var motorNumber by remember { mutableStateOf("") }
@@ -59,6 +62,7 @@ fun TrafficPolicyForm(
     var selectedMake by remember { mutableStateOf("") }
     var selectedYear by remember { mutableIntStateOf(0) }
     var selectedModel by remember { mutableStateOf("") }
+    val focusRequester = remember { FocusRequester() }
     var price by remember { mutableIntStateOf(0) }
     val selectedMakeID by remember {
         derivedStateOf { makesList.find { makes -> makes.name == selectedMake }?.id ?: 0 }
@@ -73,7 +77,6 @@ fun TrafficPolicyForm(
 
     LaunchedEffect(key1 = addedPolicy) {
         if (addedPolicy != null) {
-            println("Selamın Aleyküm")
             onCarCreate(
                 Traffic(
                     policyNo = addedPolicy.policyNo,
@@ -89,7 +92,15 @@ fun TrafficPolicyForm(
         }
     }
 
-    Column {
+    LaunchedEffect(key1 = Unit) {
+        focusRequester.requestFocus()
+    }
+
+    Column(
+        Modifier
+            .focusable()
+            .focusRequester(focusRequester)
+    ) {
         CustomText(
             text = "Traffic",
             fontFamilyID = R.font.poppins_semi_bold,
@@ -129,7 +140,7 @@ fun TrafficPolicyForm(
                 title = "Please select a mark"
             )
             CustomSelectionDialog(
-                data = TempVariables.yearList,
+                data = listOf("2015", "2016", "2017", "2018", "2019", "2020"),
                 placeHolder = "Year",
                 onDataSelected = {
                     selectedYear = it.toInt()
@@ -195,7 +206,7 @@ fun TrafficPolicyForm(
                 )
                 CustomLargeIconButton(
                     isEnable = addedPolicy != null,
-                    onClick = { },
+                    onClick = onSetPolicyClick,
                     buttonText = R.string.new_policy,
                     id = R.drawable.icon_add_policy,
                     modifier = Modifier

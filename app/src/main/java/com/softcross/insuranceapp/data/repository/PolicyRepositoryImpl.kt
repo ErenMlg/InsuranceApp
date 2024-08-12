@@ -29,8 +29,12 @@ class PolicyRepositoryImpl @Inject constructor(
         remoteDataSource.getAllPolicies()
             .map { it.mapResponse { data.map { data -> data.toPolicy() } } }
 
+    override fun getPolicyById(id: String): Flow<NetworkResponseState<Policy>> =
+        remoteDataSource.getPolicyById(id).map { it.mapResponse { toPolicy() } }
+
     override fun searchPolicy(idKey: String): Flow<NetworkResponseState<List<Policy>>> =
-        remoteDataSource.searchPolicy(idKey).map { it.mapResponse { data.map { data -> data.toPolicy() } } }
+        remoteDataSource.searchPolicy(idKey)
+            .map { it.mapResponse { data.map { data -> data.toPolicy() } } }
 
 
 }

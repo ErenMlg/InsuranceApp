@@ -3,11 +3,13 @@ package com.softcross.insuranceapp.di
 import com.softcross.insuranceapp.data.repository.PolicyTypeRepositoryImpl
 import com.softcross.insuranceapp.data.repository.CustomerRepositoryImpl
 import com.softcross.insuranceapp.data.repository.FirebaseRepositoryImpl
+import com.softcross.insuranceapp.data.repository.PaymentRepositoryImpl
 import com.softcross.insuranceapp.data.repository.PolicyRepositoryImpl
 import com.softcross.insuranceapp.data.repository.VehicleAndLocationRepositoryImpl
 import com.softcross.insuranceapp.domain.repository.PolicyTypeRepository
 import com.softcross.insuranceapp.domain.repository.CustomerRepository
 import com.softcross.insuranceapp.domain.repository.FirebaseRepository
+import com.softcross.insuranceapp.domain.repository.PaymentRepository
 import com.softcross.insuranceapp.domain.repository.PolicyRepository
 import com.softcross.insuranceapp.domain.repository.VehicleAndLocationRepository
 import dagger.Binds
@@ -39,5 +41,9 @@ abstract class RepositoryModule {
     @Binds
     @ViewModelScoped
     abstract fun provideCarRepository(carRepositoryImpl: PolicyTypeRepositoryImpl): PolicyTypeRepository
+
+    @Binds
+    @ViewModelScoped
+    abstract fun providePaymentRepository(paymentRepositoryImpl: PaymentRepositoryImpl): PaymentRepository
 
 }

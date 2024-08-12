@@ -42,9 +42,16 @@ fun String.idRegex(): Boolean {
 }
 
 fun String.nameSurnameRegex(): Boolean {
-    val pattern = Pattern.compile(
-        "^[a-zA-Z]{2,}\$"
-    )
+    val pattern = Pattern.compile("^[a-zA-Z]{2,}\$")
+    return if (this.trim().isNotEmpty()) {
+        pattern.matcher(this.trim()).matches()
+    } else {
+        false
+    }
+}
+
+fun String.nameSurnameRegexWithSpace(): Boolean {
+    val pattern = Pattern.compile("^[a-zA-Z]+(?:\\s[a-zA-Z]+)+$")
     return if (this.isNotEmpty()) {
         pattern.matcher(this).matches()
     } else {
@@ -133,9 +140,7 @@ fun String.creditCardNumberRegex(): Boolean {
 }
 
 fun String.creditCardDateRegex(): Boolean {
-    val pattern = Pattern.compile(
-        "^(0[1-9]|1[0-2])\\/?([0-9]{4}|[0-9]{2})\$"
-    )
+    val pattern = Pattern.compile("^(0[1-9]|1[0-2])\\/?(2[4-9]|[3-9][0-9])\$")
     return if (this.isNotEmpty()) {
         pattern.matcher(this).matches()
     } else {
@@ -184,6 +189,28 @@ fun String.calculateAge(): Long {
 fun String.dateTimeToFormattedDate(): String {
     try {
         val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
+        val outputFormatter = DateTimeFormatter.ofPattern("d MMM yyyy", Locale.ENGLISH)
+        val date = LocalDate.parse(this, inputFormatter)
+        return date.format(outputFormatter)
+    } catch (e: Exception) {
+        return "N/A"
+    }
+}
+
+fun String.dateTimeToDate(): String {
+    try {
+        val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
+        val outputFormatter = DateTimeFormatter.ofPattern("MM-dd-yyyy")
+        val date = LocalDate.parse(this, inputFormatter)
+        return date.format(outputFormatter)
+    } catch (e: Exception) {
+        return "N/A"
+    }
+}
+
+fun String.dateToFormattedDate(): String {
+    try {
+        val inputFormatter = DateTimeFormatter.ofPattern("MM-dd-yyyy")
         val outputFormatter = DateTimeFormatter.ofPattern("d MMM yyyy", Locale.ENGLISH)
         val date = LocalDate.parse(this, inputFormatter)
         return date.format(outputFormatter)

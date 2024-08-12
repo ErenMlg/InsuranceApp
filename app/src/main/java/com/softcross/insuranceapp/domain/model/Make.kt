@@ -5,8 +5,7 @@ import androidx.compose.runtime.Stable
 
 @Immutable
 @Stable
-data class Models(
+data class Make(
     val id: Int,
-    val make_id: Int,
     val name: String
 )

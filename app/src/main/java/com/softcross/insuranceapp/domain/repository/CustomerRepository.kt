@@ -9,6 +9,8 @@ interface CustomerRepository {
 
     fun getAllCustomers(): Flow<NetworkResponseState<List<Customer>>>
 
+    fun updateCustomer(customer: Customer): Flow<NetworkResponseState<Customer>>
+
     fun searchCustomer(
         nameKey: String = "",
         idKey: String = ""
@@ -17,4 +19,9 @@ interface CustomerRepository {
     fun addCustomer(customer: Customer): Flow<NetworkResponseState<CustomerDto>>
 
     fun deleteCustomer(id: String): Flow<NetworkResponseState<Unit>>
+
+    fun getUserCustomers(userID: String): Flow<NetworkResponseState<List<Customer>>>
+
+    fun getCustomer(customerID: String): Flow<NetworkResponseState<Customer>>
+
 }

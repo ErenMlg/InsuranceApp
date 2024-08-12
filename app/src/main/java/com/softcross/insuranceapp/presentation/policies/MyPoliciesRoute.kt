@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,7 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.softcross.insuranceapp.R
 import com.softcross.insuranceapp.common.ScreenState
-import com.softcross.insuranceapp.common.TempVariables
+import com.softcross.insuranceapp.common.UserCustomers
 import com.softcross.insuranceapp.common.extensions.dateTimeToFormattedDate
 import com.softcross.insuranceapp.common.extensions.formatBirthday
 import com.softcross.insuranceapp.common.extensions.passwordRegex
@@ -51,9 +52,9 @@ import com.softcross.insuranceapp.presentation.theme.InsuranceAppTheme
 @Composable
 fun MyPoliciesRoute(
     modifier: Modifier = Modifier,
-    viewModel: MyPoliciesViewModel = hiltViewModel()
+    viewModel: MyPoliciesViewModel = hiltViewModel(),
+    onPayment: (String) -> Unit
 ) {
-    var nameSurname by remember { mutableStateOf("") }
     var selectedType by remember { mutableStateOf(PolicyType.UNSELECTED) }
     var selectedCustomer by remember { mutableStateOf<Customer?>(null) }
     val state = viewModel.policyState.value
@@ -87,10 +88,10 @@ fun MyPoliciesRoute(
                         .padding(start = 8.dp, top = 8.dp, bottom = 8.dp, end = 8.dp)
                 )
                 CustomSelectionDialog(
-                    data = TempVariables.customerList.map { it.name + " " + it.surname },
+                    data = UserCustomers.getCustomerList().map { it.name + " " + it.surname },
                     placeHolder = "Customer",
                     onDataSelected = {
-                        selectedCustomer = TempVariables.findCustomerByName(it)
+                        selectedCustomer = UserCustomers.getCustomerByName(it)
                     },
                     title = "Please select a customer",
                     modifier = Modifier
@@ -98,32 +99,59 @@ fun MyPoliciesRoute(
                         .padding(start = 8.dp, top = 8.dp, bottom = 8.dp, end = 8.dp)
                 )
             }
-            LoadingTextButton(
-                isLoading = false,
-                isEnable = selectedType != PolicyType.UNSELECTED || selectedCustomer != null,
-                onClick = {
-                    if (selectedCustomer != null) {
-                        if (selectedType != PolicyType.UNSELECTED) {
-                            viewModel.searchPolicy(selectedCustomer!!.id, selectedType)
-                        }else{
-                            viewModel.searchPolicy(selectedCustomer!!.id)
+            Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                LoadingTextButton(
+                    isLoading = false,
+                    isEnable = selectedType != PolicyType.UNSELECTED || selectedCustomer != null,
+                    onClick = {
+                        if (selectedCustomer != null) {
+                            if (selectedType != PolicyType.UNSELECTED) {
+                                viewModel.searchPolicy(selectedCustomer!!.id, selectedType)
+                            } else {
+                                viewModel.searchPolicy(selectedCustomer!!.id)
+                            }
+                        } else {
+                            if (selectedType != PolicyType.UNSELECTED) {
+                                viewModel.searchPolicy("0", selectedType)
+                            }
                         }
-                    }else{
-                        if (selectedType != PolicyType.UNSELECTED) {
-                            viewModel.searchPolicy("0", selectedType)
-                        }
-                    }
-                },
-                buttonText = R.string.search
-            )
+                    },
+                    buttonText = R.string.search
+                )
+                CustomIconButton(
+                    iconModifier = Modifier.size(24.dp),
+                    modifier = Modifier
+                        .weight(0.1f)
+                        .padding(vertical = 8.dp)
+                        .height(50.dp),
+                    onClick = {
+                        selectedType = PolicyType.UNSELECTED
+                        selectedCustomer = null
+                        viewModel.getAllPolicies()
+                    },
+                    id = R.drawable.icon_reset
+                )
+            }
             when (state) {
                 is ScreenState.Loading -> {
-
+                    CustomText(
+                        text = "Loading...",
+                        fontFamilyID = R.font.poppins_semi_bold,
+                        fontSize = 18.sp,
+                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                    )
                 }
 
                 is ScreenState.Success -> {
                     policyList = state.data
-                    PoliciesResultContent(policyList)
+                    PoliciesResultContent(
+                        policyList,
+                        viewModel::deletePolicy,
+                        onPayment
+                    )
                 }
 
                 else -> {}
@@ -134,12 +162,15 @@ fun MyPoliciesRoute(
 
 @Composable
 fun PoliciesResultContent(
-    policyList: List<Policy>
+    policyList: List<Policy>,
+    deletePolicy: (Policy) -> Unit,
+    onPayment: (String) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.padding(vertical = 16.dp)
     ) {
         items(policyList.size) { index ->
+            val customer = UserCustomers.getCustomerById(policyList[index].customerNo)
             Row(
                 modifier = Modifier
                     .padding(top = 8.dp, bottom = 8.dp)
@@ -150,7 +181,9 @@ fun PoliciesResultContent(
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Column(
-                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp).weight(0.8f),
+                    modifier = Modifier
+                        .padding(vertical = 8.dp, horizontal = 16.dp)
+                        .weight(0.8f),
                     verticalArrangement = Arrangement.SpaceEvenly
                 ) {
                     CustomAnnotatedText(
@@ -161,7 +194,7 @@ fun PoliciesResultContent(
                     )
                     CustomAnnotatedText(
                         header = "Customer: ",
-                        text = policyList[index].customerNo,
+                        text = customer?.name + ' ' + customer?.surname,
                         fontSize = 14.sp,
                         modifier = Modifier.padding(vertical = 2.dp)
                     )
@@ -186,13 +219,15 @@ fun PoliciesResultContent(
                     if (policyList[index].policyStatus == 'P') {
                         CustomAnnotatedText(
                             header = "Start Date: ",
-                            text = (policyList[index].policyStartDate ?: "Unkown").dateTimeToFormattedDate(),
+                            text = (policyList[index].policyStartDate
+                                ?: "Unkown").dateTimeToFormattedDate(),
                             fontSize = 14.sp,
                             modifier = Modifier.padding(vertical = 2.dp)
                         )
                         CustomAnnotatedText(
                             header = "End Date: ",
-                            text = (policyList[index].policyEndDate ?: "Unkown").dateTimeToFormattedDate(),
+                            text = (policyList[index].policyEndDate
+                                ?: "Unkown").dateTimeToFormattedDate(),
                             fontSize = 14.sp,
                             modifier = Modifier.padding(vertical = 2.dp)
                         )
@@ -205,32 +240,28 @@ fun PoliciesResultContent(
                     )
                 }
                 Column(
-                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp).weight(0.2f),
+                    modifier = Modifier
+                        .padding(vertical = 8.dp, horizontal = 16.dp)
+                        .weight(0.2f),
                     verticalArrangement = Arrangement.SpaceEvenly,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    if (policyList[index].policyStatus == 'T') {
+                        CustomIconButton(
+                            iconModifier = Modifier.size(18.dp),
+                            modifier = Modifier,
+                            onClick = { onPayment(policyList[index].policyNo) },
+                            id = R.drawable.icon_payments
+                        )
+                    }
                     CustomIconButton(
                         iconModifier = Modifier.size(18.dp),
                         modifier = Modifier,
-                        onClick = { /*TODO*/ },
-                        id = R.drawable.icon_edit
-                    )
-                    CustomIconButton(
-                        iconModifier = Modifier.size(18.dp),
-                        modifier = Modifier,
-                        onClick = {},
+                        onClick = { deletePolicy(policyList[index]) },
                         id = R.drawable.icon_trash
                     )
                 }
             }
         }
-    }
-}
-
-@Preview(showSystemUi = true)
-@Composable
-fun MyPoliciesRoutePreview() {
-    InsuranceAppTheme {
-        MyPoliciesRoute()
     }
 }

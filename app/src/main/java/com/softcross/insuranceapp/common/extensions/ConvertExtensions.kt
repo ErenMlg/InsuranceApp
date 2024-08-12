@@ -5,6 +5,7 @@ import com.softcross.insuranceapp.data.dto.address.ProvincesDto
 import com.softcross.insuranceapp.data.dto.customer.CustomerDto
 import com.softcross.insuranceapp.data.dto.dask.DaskDto
 import com.softcross.insuranceapp.data.dto.health.HealthDto
+import com.softcross.insuranceapp.data.dto.payment.PaymentDto
 import com.softcross.insuranceapp.data.dto.policy.PolicyDto
 import com.softcross.insuranceapp.data.dto.traffic_kasko.TrafficKaskoDto
 import com.softcross.insuranceapp.domain.model.Customer
@@ -12,9 +13,30 @@ import com.softcross.insuranceapp.domain.model.Dask
 import com.softcross.insuranceapp.domain.model.District
 import com.softcross.insuranceapp.domain.model.Health
 import com.softcross.insuranceapp.domain.model.Kasko
+import com.softcross.insuranceapp.domain.model.Payment
 import com.softcross.insuranceapp.domain.model.Policy
 import com.softcross.insuranceapp.domain.model.Province
 import com.softcross.insuranceapp.domain.model.Traffic
+
+fun Payment.toPaymentDto() = PaymentDto(
+    creditCardNumber = creditCardNumber,
+    cardDate = cardDate,
+    cardName = cardName,
+    cardCVC = cardCVC,
+    paymentDate = paymentDate,
+    paymentAmount = paymentAmount,
+    policyNo = policyNo
+)
+
+fun PaymentDto.toPayment() = Payment(
+    creditCardNumber = creditCardNumber,
+    cardDate = cardDate,
+    cardName = cardName,
+    cardCVC = cardCVC,
+    paymentDate = paymentDate,
+    paymentAmount = paymentAmount,
+    policyNo = policyNo
+)
 
 fun ProvincesDto.toProvince() = Province(
     id = id,

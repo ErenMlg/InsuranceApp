@@ -17,38 +17,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NewCustomerViewModel @Inject constructor(
-    private val customerRepository: CustomerRepository,
-    private val vehicleAndLocationRepository: VehicleAndLocationRepository
+    private val customerRepository: CustomerRepository
 ) : ViewModel() {
 
     private val _newCustomerState =
         mutableStateOf<ScreenState<CustomerDto>>(ScreenState.Loading)
     val newCustomerState: State<ScreenState<CustomerDto>> = _newCustomerState
 
-    private val _addressState = mutableStateOf<ScreenState<List<Province>>>(ScreenState.Loading)
-    val addressState: State<ScreenState<List<Province>>> = _addressState
-
-    init {
-        getAllProvinces()
-    }
-
-    private fun getAllProvinces() = viewModelScope.launch {
-        vehicleAndLocationRepository.getAllProvinceAndDistricts().collect { response ->
-            when (response) {
-                is NetworkResponseState.Success -> {
-                    _addressState.value = ScreenState.Success(response.result)
-                }
-
-                is NetworkResponseState.Error -> {
-                    _addressState.value = ScreenState.Error(response.exception.message ?: "An error")
-                }
-
-                is NetworkResponseState.Loading -> {
-                    _addressState.value = ScreenState.Loading
-                }
-            }
-        }
-    }
 
     fun addCustomer(customer: Customer) = viewModelScope.launch {
         customerRepository.addCustomer(customer).collect { response ->

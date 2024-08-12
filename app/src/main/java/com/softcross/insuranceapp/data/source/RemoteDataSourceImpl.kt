@@ -6,11 +6,13 @@ import com.softcross.insuranceapp.common.extensions.toCustomerDto
 import com.softcross.insuranceapp.common.extensions.toDaskDto
 import com.softcross.insuranceapp.common.extensions.toHealthDto
 import com.softcross.insuranceapp.common.extensions.toKaskoDto
+import com.softcross.insuranceapp.common.extensions.toPaymentDto
 import com.softcross.insuranceapp.common.extensions.toPolicyDto
 import com.softcross.insuranceapp.common.extensions.toTrafficDto
 import com.softcross.insuranceapp.data.api.CarPropertiesService
 import com.softcross.insuranceapp.data.api.CustomerService
 import com.softcross.insuranceapp.data.api.LocationService
+import com.softcross.insuranceapp.data.api.PaymentService
 import com.softcross.insuranceapp.data.api.PolicyService
 import com.softcross.insuranceapp.data.api.PolicyTypeService
 import com.softcross.insuranceapp.data.dto.address.AddressResponseDto
@@ -22,6 +24,8 @@ import com.softcross.insuranceapp.data.dto.dask.DaskDto
 import com.softcross.insuranceapp.data.dto.dask.DaskResponse
 import com.softcross.insuranceapp.data.dto.health.HealthDto
 import com.softcross.insuranceapp.data.dto.health.HealthResponse
+import com.softcross.insuranceapp.data.dto.payment.PaymentDto
+import com.softcross.insuranceapp.data.dto.payment.PaymentResponse
 import com.softcross.insuranceapp.data.dto.policy.PolicyDto
 import com.softcross.insuranceapp.data.dto.policy.PolicyResponse
 import com.softcross.insuranceapp.data.dto.traffic_kasko.TrafficKaskoDto
@@ -30,6 +34,7 @@ import com.softcross.insuranceapp.domain.model.Customer
 import com.softcross.insuranceapp.domain.model.Dask
 import com.softcross.insuranceapp.domain.model.Health
 import com.softcross.insuranceapp.domain.model.Kasko
+import com.softcross.insuranceapp.domain.model.Payment
 import com.softcross.insuranceapp.domain.model.Policy
 import com.softcross.insuranceapp.domain.model.Traffic
 import kotlinx.coroutines.flow.Flow
@@ -42,7 +47,8 @@ class RemoteDataSourceImpl @Inject constructor(
     private val locationService: LocationService,
     private val policyService: PolicyService,
     private val policyTypeService: PolicyTypeService,
-    private val carPropertiesService: CarPropertiesService
+    private val carPropertiesService: CarPropertiesService,
+    private val paymentService: PaymentService
 ) : RemoteDataSource {
 
     // Customer
@@ -64,6 +70,30 @@ class RemoteDataSourceImpl @Inject constructor(
             emit(NetworkResponseState.Loading)
             try {
                 val result = customerService.getAllCustomers()
+                emit(NetworkResponseState.Success(result))
+            } catch (e: Exception) {
+                emit(NetworkResponseState.Error(e.httpErrorHandle()))
+            }
+        }
+    }
+
+    override fun getCustomerById(id: String): Flow<NetworkResponseState<CustomerDto>> {
+        return flow {
+            emit(NetworkResponseState.Loading)
+            try {
+                val result = customerService.getCustomerById(id)
+                emit(NetworkResponseState.Success(result))
+            } catch (e: Exception) {
+                emit(NetworkResponseState.Error(e.httpErrorHandle()))
+            }
+        }
+    }
+
+    override fun updateCustomer(customer: Customer): Flow<NetworkResponseState<CustomerDto>> {
+        return flow {
+            emit(NetworkResponseState.Loading)
+            try {
+                val result = customerService.updateCustomer(customer.id, customer.toCustomerDto())
                 emit(NetworkResponseState.Success(result))
             } catch (e: Exception) {
                 emit(NetworkResponseState.Error(e.httpErrorHandle()))
@@ -98,6 +128,18 @@ class RemoteDataSourceImpl @Inject constructor(
         }
     }
 
+    override fun getUserCustomers(userID: String): Flow<NetworkResponseState<CustomerResponse>> {
+        return flow {
+            emit(NetworkResponseState.Loading)
+            try {
+                val result = customerService.getUserCustomers(userID)
+                emit(NetworkResponseState.Success(result))
+            } catch (e: Exception) {
+                emit(NetworkResponseState.Error(e.httpErrorHandle()))
+            }
+        }
+    }
+
     // Address
 
     override fun getAllProvinceAndDistricts(): Flow<NetworkResponseState<AddressResponseDto>> {
@@ -119,7 +161,6 @@ class RemoteDataSourceImpl @Inject constructor(
             emit(NetworkResponseState.Loading)
             try {
                 val result = policyTypeService.addTraffic(traffic.toTrafficDto())
-                println(result)
                 emit(NetworkResponseState.Success(result))
             } catch (e: Exception) {
                 emit(NetworkResponseState.Error(e.httpErrorHandle()))
@@ -132,7 +173,6 @@ class RemoteDataSourceImpl @Inject constructor(
             emit(NetworkResponseState.Loading)
             try {
                 val result = policyTypeService.addKasko(kasko.toKaskoDto())
-                println(result)
                 emit(NetworkResponseState.Success(result))
             } catch (e: Exception) {
                 emit(NetworkResponseState.Error(e.httpErrorHandle()))
@@ -145,7 +185,6 @@ class RemoteDataSourceImpl @Inject constructor(
             emit(NetworkResponseState.Loading)
             try {
                 val result = policyTypeService.addHealth(health.toHealthDto())
-                println(result)
                 emit(NetworkResponseState.Success(result))
             } catch (e: Exception) {
                 emit(NetworkResponseState.Error(e.httpErrorHandle()))
@@ -158,7 +197,42 @@ class RemoteDataSourceImpl @Inject constructor(
             emit(NetworkResponseState.Loading)
             try {
                 val result = policyTypeService.addDask(dask.toDaskDto())
-                println(result)
+                emit(NetworkResponseState.Success(result))
+            } catch (e: Exception) {
+                emit(NetworkResponseState.Error(e.httpErrorHandle()))
+            }
+        }
+    }
+
+    override fun makePayment(payment: Payment): Flow<NetworkResponseState<PaymentDto>> {
+        return flow {
+            emit(NetworkResponseState.Loading)
+            try {
+                val result = paymentService.makePayment(payment.toPaymentDto())
+                emit(NetworkResponseState.Success(result))
+            } catch (e: Exception) {
+                emit(NetworkResponseState.Error(e.httpErrorHandle()))
+            }
+        }
+    }
+
+    override fun getAllPayments(): Flow<NetworkResponseState<PaymentResponse>> {
+        return flow {
+            emit(NetworkResponseState.Loading)
+            try {
+                val result = paymentService.getPayments()
+                emit(NetworkResponseState.Success(result))
+            } catch (e: Exception) {
+                emit(NetworkResponseState.Error(e.httpErrorHandle()))
+            }
+        }
+    }
+
+    override fun deletePayment(id: String): Flow<NetworkResponseState<PaymentDto>> {
+        return flow {
+            emit(NetworkResponseState.Loading)
+            try {
+                val result = paymentService.deletePayment(id)
                 emit(NetworkResponseState.Success(result))
             } catch (e: Exception) {
                 emit(NetworkResponseState.Error(e.httpErrorHandle()))
@@ -222,9 +296,11 @@ class RemoteDataSourceImpl @Inject constructor(
         return flow {
             emit(NetworkResponseState.Loading)
             try {
-                val result = policyService.updatePolicy(policy.toPolicyDto())
+                val result = policyService.updatePolicy(policy.policyNo, policy.toPolicyDto())
+                println(result)
                 emit(NetworkResponseState.Success(result))
             } catch (e: Exception) {
+                println(e)
                 emit(NetworkResponseState.Error(e.httpErrorHandle()))
             }
         }
@@ -247,6 +323,18 @@ class RemoteDataSourceImpl @Inject constructor(
             emit(NetworkResponseState.Loading)
             try {
                 val result = policyService.getAllPolicies()
+                emit(NetworkResponseState.Success(result))
+            } catch (e: Exception) {
+                emit(NetworkResponseState.Error(e.httpErrorHandle()))
+            }
+        }
+    }
+
+    override fun getPolicyById(id: String): Flow<NetworkResponseState<PolicyDto>> {
+        return flow {
+            emit(NetworkResponseState.Loading)
+            try {
+                val result = policyService.getPolicyById(id)
                 emit(NetworkResponseState.Success(result))
             } catch (e: Exception) {
                 emit(NetworkResponseState.Error(e.httpErrorHandle()))

@@ -14,11 +14,14 @@ interface PolicyService {
     @POST("policies")
     suspend fun addPolicy(@Body policyDto: PolicyDto): PolicyDto
 
-    @PUT("policies")
-    suspend fun updatePolicy(@Body policyDto: PolicyDto): PolicyDto
+    @PUT("policies/{id}")
+    suspend fun updatePolicy(@Path("id") id:String, @Body policyDto: PolicyDto): PolicyDto
 
     @DELETE("policies/{id}")
     suspend fun deletePolicy(@Path("id") id: String)
+
+    @GET("policies/policyNo={id}")
+    suspend fun getPolicyById(@Path("id") id: String): PolicyDto
 
     @GET("policies")
     suspend fun getAllPolicies(): PolicyResponse

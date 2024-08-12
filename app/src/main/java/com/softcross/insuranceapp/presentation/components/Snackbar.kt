@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.softcross.insuranceapp.R
+import kotlinx.coroutines.delay
 
 @Composable
 fun CustomSnackbar(
@@ -45,6 +46,8 @@ fun CustomSnackbar(
         snackbarHostState.showSnackbar(
             message = errorMessage
         )
+        delay(5000)
+        println("Snackbar dismissed")
     }
 
     SnackbarHost(

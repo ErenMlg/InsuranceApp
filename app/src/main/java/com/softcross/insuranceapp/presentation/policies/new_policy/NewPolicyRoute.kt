@@ -1,8 +1,6 @@
 package com.softcross.insuranceapp.presentation.policies.new_policy
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,72 +11,59 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.text.isDigitsOnly
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.wear.compose.foundation.ExperimentalWearFoundationApi
+import androidx.wear.compose.foundation.HierarchicalFocusCoordinator
 import com.softcross.insuranceapp.R
+import com.softcross.insuranceapp.common.AllCustomers
+import com.softcross.insuranceapp.common.CurrentUser
 import com.softcross.insuranceapp.common.ScreenState
-import com.softcross.insuranceapp.common.TempVariables
-import com.softcross.insuranceapp.common.extensions.calculateAge
-import com.softcross.insuranceapp.common.extensions.chassisNumberRegex
-import com.softcross.insuranceapp.common.extensions.motorNumberRegex
-import com.softcross.insuranceapp.common.extensions.passwordRegex
-import com.softcross.insuranceapp.common.extensions.plateCodeRegex
-import com.softcross.insuranceapp.common.extensions.plateRegex
-import com.softcross.insuranceapp.common.extensions.uavtRegex
-import com.softcross.insuranceapp.domain.model.Traffic
+import com.softcross.insuranceapp.common.UserCustomers
 import com.softcross.insuranceapp.domain.model.Customer
-import com.softcross.insuranceapp.domain.model.Dask
-import com.softcross.insuranceapp.domain.model.Health
-import com.softcross.insuranceapp.domain.model.Kasko
-import com.softcross.insuranceapp.domain.model.Models
 import com.softcross.insuranceapp.domain.model.Policy
 import com.softcross.insuranceapp.domain.model.PolicyStatus
 import com.softcross.insuranceapp.domain.model.PolicyType
 import com.softcross.insuranceapp.domain.model.getPolicyByName
-import com.softcross.insuranceapp.presentation.components.CustomLargeIconButton
 import com.softcross.insuranceapp.presentation.components.CustomSelectionDialog
 import com.softcross.insuranceapp.presentation.components.CustomSnackbar
 import com.softcross.insuranceapp.presentation.components.CustomText
-import com.softcross.insuranceapp.presentation.components.CustomTextField
-import com.softcross.insuranceapp.presentation.components.LoadingTextButton
 import com.softcross.insuranceapp.presentation.policies.new_policy.policy_forms.DaskPolicyForm
 import com.softcross.insuranceapp.presentation.policies.new_policy.policy_forms.HealthPolicyForm
 import com.softcross.insuranceapp.presentation.policies.new_policy.policy_forms.KaskoPolicyForm
 import com.softcross.insuranceapp.presentation.policies.new_policy.policy_forms.TrafficPolicyForm
+import kotlinx.coroutines.delay
 import java.time.LocalDate
-import java.time.Year
 
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalWearFoundationApi::class)
 @Composable
 fun NewPolicyRoute(
     modifier: Modifier = Modifier,
-    viewModel: NewPolicyViewModel = hiltViewModel()
+    viewModel: NewPolicyViewModel = hiltViewModel(),
+    onPay: (String) -> Unit
 ) {
     val policyState = viewModel.policyState.value
     val pagerState = rememberPagerState { PolicyType.entries.size }
@@ -86,6 +71,23 @@ fun NewPolicyRoute(
     var selectedCustomer by remember { mutableStateOf<Customer?>(null) }
     var addedPolicy by remember { mutableStateOf<Policy?>(null) }
     var snackbarMessage by remember { mutableStateOf("") }
+    val onTakeOffer: (Int, Int) -> Unit = { price: Int, code: Int ->
+        selectedCustomer?.let { customer ->
+            viewModel.addPolicy(
+                Policy(
+                    customerNo = customer.id,
+                    policyAgent = CurrentUser.getCurrentUserID(),
+                    policyPrim = price,
+                    policyStatus = PolicyStatus.OFFER.getStatusCode(),
+                    policyTypeCode = code,
+                    policyEnterDate = LocalDate.now().toString()
+                )
+            )
+        }
+    }
+    val onSetPolicyClick: () -> Unit = {
+        onPay(addedPolicy?.policyNo ?: "")
+    }
 
     when (policyState) {
         is ScreenState.Error -> {
@@ -93,7 +95,7 @@ fun NewPolicyRoute(
         }
 
         ScreenState.Loading -> {
-            snackbarMessage = ""
+            snackbarMessage = "";
             addedPolicy = null
         }
 
@@ -102,27 +104,34 @@ fun NewPolicyRoute(
         }
     }
 
+    LaunchedEffect(key1 = pagerState) {
+        snapshotFlow { pagerState.currentPage }.collect { page ->
+            delay(100)
+            selectedType = PolicyType.entries.toTypedArray()[page]
+        }
+    }
+
     LaunchedEffect(key1 = selectedType, key2 = selectedCustomer) {
         if (selectedCustomer != null && selectedType != PolicyType.UNSELECTED) {
             when (selectedType) {
                 PolicyType.TRAFFIC -> {
                     addedPolicy = null
-                    pagerState.animateScrollToPage(PolicyType.TRAFFIC.ordinal)
+                    pagerState.scrollToPage(PolicyType.TRAFFIC.ordinal)
                 }
 
                 PolicyType.KASKO -> {
                     addedPolicy = null
-                    pagerState.animateScrollToPage(PolicyType.KASKO.ordinal)
+                    pagerState.scrollToPage(PolicyType.KASKO.ordinal)
                 }
 
                 PolicyType.HEALTH -> {
                     addedPolicy = null
-                    pagerState.animateScrollToPage(PolicyType.HEALTH.ordinal)
+                    pagerState.scrollToPage(PolicyType.HEALTH.ordinal)
                 }
 
                 PolicyType.DASK -> {
                     addedPolicy = null
-                    pagerState.animateScrollToPage(PolicyType.DASK.ordinal)
+                    pagerState.scrollToPage(PolicyType.DASK.ordinal)
                 }
 
                 PolicyType.UNSELECTED -> {
@@ -132,6 +141,7 @@ fun NewPolicyRoute(
             }
         }
     }
+
     Box(
         Modifier.fillMaxSize()
     ) {
@@ -159,10 +169,10 @@ fun NewPolicyRoute(
                         .padding(start = 8.dp, top = 8.dp, bottom = 8.dp, end = 8.dp)
                 )
                 CustomSelectionDialog(
-                    data = TempVariables.customerList.map { it.name + " " + it.surname },
+                    data = AllCustomers.getCustomerList().map { it.name + " " + it.surname },
                     placeHolder = "Customer",
                     onDataSelected = {
-                        selectedCustomer = TempVariables.findCustomerByName(it)
+                        selectedCustomer = AllCustomers.getCustomerByName(it)
                     },
                     title = "Please select a customer",
                     modifier = Modifier
@@ -170,95 +180,52 @@ fun NewPolicyRoute(
                         .padding(start = 8.dp, top = 8.dp, bottom = 8.dp, end = 8.dp)
                 )
             }
+
             HorizontalPager(
                 state = pagerState,
-                userScrollEnabled = false
+                userScrollEnabled = false,
             ) { page ->
-                when (page) {
-                    PolicyType.UNSELECTED.ordinal -> UnselectedForm()
+                ClippedBox(pagerState = pagerState) {
+                    HierarchicalFocusCoordinator(requiresFocus = { page == pagerState.currentPage }) {
+                        when (page) {
+                            PolicyType.UNSELECTED.ordinal -> {
+                                UnselectedForm()
+                            }
 
-                    PolicyType.TRAFFIC.ordinal -> TrafficPolicyForm(
-                        modelState = viewModel.modelState.value,
-                        customer = TempVariables.customerList[0],
-                        modelSearch = viewModel::getModels,
-                        onTakeOfferClick = { price, code ->
-                            val policy = Policy(
-                                customerNo = TempVariables.customerList[0].id,
-                                policyAgent = TempVariables.customerList[0].id,
-                                policyPrim = price,
-                                policyStatus = PolicyStatus.OFFER.getStatusCode(),
-                                policyTypeCode = code,
-                                policyEnterDate = LocalDate.now().toString()
+                            PolicyType.TRAFFIC.ordinal -> TrafficPolicyForm(
+                                modelState = viewModel.modelState.value,
+                                customer = selectedCustomer ?: UserCustomers.getCustomerByIndex(0),
+                                modelSearch = viewModel::getModels,
+                                onTakeOfferClick = onTakeOffer,
+                                onCarCreate = { viewModel.addTraffic(traffic = it) },
+                                onSetPolicyClick = onSetPolicyClick,
+                                addedPolicy = addedPolicy
                             )
-                            viewModel.addPolicy(policy)
-                        },
-                        onCarCreate = { viewModel.addTraffic(traffic = it) },
-                        onSetPolicyClick = {
-                            val updatedPolicy = addedPolicy?.copy(
-                                policyStatus = PolicyStatus.POLICY.getStatusCode(),
-                                policyStartDate = LocalDate.now().toString(),
-                                policyEndDate = LocalDate.now().plusYears(1).toString()
-                            )
-                        },
-                        addedPolicy = addedPolicy
-                    )
 
-                    PolicyType.KASKO.ordinal -> KaskoPolicyForm(
-                        modelState = viewModel.modelState.value,
-                        modelSearch = viewModel::getModels,
-                        onTakeOfferClick = { price, code ->
-                            val policy = Policy(
-                                customerNo = TempVariables.customerList[0].id,
-                                policyAgent = TempVariables.customerList[0].id,
-                                policyPrim = price,
-                                policyStatus = PolicyStatus.OFFER.getStatusCode(),
-                                policyTypeCode = code,
-                                policyEnterDate = LocalDate.now().toString()
+                            PolicyType.KASKO.ordinal -> KaskoPolicyForm(
+                                modelState = viewModel.modelState.value,
+                                modelSearch = viewModel::getModels,
+                                onTakeOfferClick = onTakeOffer,
+                                onKaskoCreate = { viewModel.addKasko(kasko = it) },
+                                onSetPolicyClick = onSetPolicyClick,
+                                addedPolicy = addedPolicy
                             )
-                            viewModel.addPolicy(policy)
-                        },
-                        onKaskoCreate = { viewModel.addKasko(kasko = it) },
-                        onSetPolicyClick = {
-                            val updatedPolicy = addedPolicy?.copy(
-                                policyStatus = PolicyStatus.POLICY.getStatusCode(),
-                                policyStartDate = LocalDate.now().toString(),
-                                policyEndDate = LocalDate.now().plusYears(1).toString()
-                            )
-                        },
-                        addedPolicy = addedPolicy
-                    )
 
-                    PolicyType.HEALTH.ordinal -> HealthPolicyForm(
-                        addedPolicy = addedPolicy,
-                        onTakeOfferClick = { price, code ->
-                            val policy = Policy(
-                                customerNo = TempVariables.customerList[0].id,
-                                policyAgent = TempVariables.customerList[0].id,
-                                policyPrim = price,
-                                policyStatus = PolicyStatus.OFFER.getStatusCode(),
-                                policyTypeCode = code,
-                                policyEnterDate = LocalDate.now().toString()
+                            PolicyType.HEALTH.ordinal -> HealthPolicyForm(
+                                addedPolicy = addedPolicy,
+                                onTakeOfferClick = onTakeOffer,
+                                onHealthCreate = { viewModel.addHealth(health = it) },
+                                onSetPolicyClick = onSetPolicyClick,
                             )
-                            viewModel.addPolicy(policy)
-                        },
-                        onHealthCreate = { viewModel.addHealth(health = it) }
-                    )
 
-                    PolicyType.DASK.ordinal -> DaskPolicyForm(
-                        addedPolicy = addedPolicy,
-                        onTakeOfferClick = { price, code ->
-                            val policy = Policy(
-                                customerNo = TempVariables.customerList[0].id,
-                                policyAgent = TempVariables.customerList[0].id,
-                                policyPrim = price,
-                                policyStatus = PolicyStatus.OFFER.getStatusCode(),
-                                policyTypeCode = code,
-                                policyEnterDate = LocalDate.now().toString()
+                            PolicyType.DASK.ordinal -> DaskPolicyForm(
+                                addedPolicy = addedPolicy,
+                                onTakeOfferClick = onTakeOffer,
+                                onSetPolicyClick = onSetPolicyClick,
+                                onDaskCreate = { viewModel.addDask(dask = it) }
                             )
-                            viewModel.addPolicy(policy)
-                        },
-                        onDaskCreate = { viewModel.addDask(dask = it) }
-                    )
+                        }
+                    }
                 }
             }
         }
@@ -270,6 +237,44 @@ fun NewPolicyRoute(
                     .align(alignment = Alignment.BottomCenter)
             )
         }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+internal fun ClippedBox(pagerState: PagerState, content: @Composable () -> Unit) {
+    val shape = rememberClipWhenScrolling(pagerState)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .optionalClip(shape),
+    ) {
+        content()
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun rememberClipWhenScrolling(state: PagerState): State<RoundedCornerShape?> {
+    val shape = if (LocalConfiguration.current.isScreenRound) CircleShape else null
+    return remember(state) {
+        derivedStateOf {
+            if (shape != null && state.currentPageOffsetFraction != 0f) {
+                shape
+            } else {
+                null
+            }
+        }
+    }
+}
+
+private fun Modifier.optionalClip(shapeState: State<RoundedCornerShape?>): Modifier {
+    val shape = shapeState.value
+
+    return if (shape != null) {
+        clip(shape)
+    } else {
+        this
     }
 }
 
@@ -288,7 +293,7 @@ fun UnselectedForm() {
                 .padding(bottom = 16.dp)
         )
         CustomText(
-            text = "Please select a policy type and customer",
+            text = stringResource(id = R.string.please_select_user_and_type),
             fontSize = 16.sp,
             textAlign = TextAlign.Center,
             line = Int.MAX_VALUE,
@@ -297,5 +302,3 @@ fun UnselectedForm() {
         )
     }
 }
-
-

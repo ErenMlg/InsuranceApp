@@ -1,6 +1,7 @@
 package com.softcross.insuranceapp.presentation.policies.new_policy.policy_forms
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +17,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -35,6 +38,7 @@ import com.softcross.insuranceapp.presentation.components.CustomTextField
 fun DaskPolicyForm(
     addedPolicy: Policy?,
     onTakeOfferClick: (Int, Int) -> Unit,
+    onSetPolicyClick: () -> Unit,
     onDaskCreate: (Dask) -> Unit
 ) {
 
@@ -44,7 +48,6 @@ fun DaskPolicyForm(
     var apartmentAge by remember { mutableStateOf("") }
     var structType by remember { mutableStateOf("") }
     var price by remember { mutableIntStateOf(0) }
-
     LaunchedEffect(key1 = addedPolicy) {
         if (addedPolicy != null) {
             onDaskCreate(
@@ -59,6 +62,7 @@ fun DaskPolicyForm(
             )
         }
     }
+
 
     Column {
         CustomText(
@@ -138,7 +142,7 @@ fun DaskPolicyForm(
                 )
                 CustomLargeIconButton(
                     isEnable = addedPolicy != null,
-                    onClick = { },
+                    onClick = onSetPolicyClick,
                     buttonText = R.string.new_policy,
                     id = R.drawable.icon_add_policy,
                     modifier = Modifier

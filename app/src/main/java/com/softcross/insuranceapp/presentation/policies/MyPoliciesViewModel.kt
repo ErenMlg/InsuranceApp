@@ -28,7 +28,7 @@ class MyPoliciesViewModel @Inject constructor(
         getAllPolicies()
     }
 
-    private fun getAllPolicies() = viewModelScope.launch {
+    fun getAllPolicies() = viewModelScope.launch {
         policyRepository.getPolicies().collectLatest { response ->
             when (response) {
                 is NetworkResponseState.Success -> {
@@ -54,13 +54,32 @@ class MyPoliciesViewModel @Inject constructor(
                     if (type == PolicyType.UNSELECTED) {
                         _policyState.value = ScreenState.Success(response.result)
                     } else {
-                        _policyState.value = ScreenState.Success(response.result.filter { it.policyTypeCode == type.getTypeCode() })
+                        _policyState.value =
+                            ScreenState.Success(response.result.filter { it.policyTypeCode == type.getTypeCode() })
                     }
                 }
 
                 is NetworkResponseState.Error -> {
                     _policyState.value =
                         ScreenState.Error(response.exception.message ?: "An error occurred")
+                }
+
+                is NetworkResponseState.Loading -> {
+                    _policyState.value = ScreenState.Loading
+                }
+            }
+        }
+    }
+
+    fun deletePolicy(policy: Policy) = viewModelScope.launch {
+        policyRepository.deletePolicy(policy).collectLatest {
+            when (it) {
+                is NetworkResponseState.Success -> {
+                    getAllPolicies()
+                }
+
+                is NetworkResponseState.Error -> {
+                    _policyState.value = ScreenState.Error(it.exception.message ?: "Error")
                 }
 
                 is NetworkResponseState.Loading -> {
