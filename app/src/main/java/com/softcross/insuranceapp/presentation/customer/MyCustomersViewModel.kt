@@ -25,8 +25,19 @@ class MyCustomersViewModel @Inject constructor(
 
     private fun getUserCustomers() = viewModelScope.launch {
         customerRepository.getUserCustomers(CurrentUser.getCurrentUserID()).collect { response ->
-            if (response is NetworkResponseState.Success) {
-                UserCustomers.setCustomerList(response.result)
+            when(response) {
+                is NetworkResponseState.Success -> {
+                    UserCustomers.setCustomerList(response.result)
+                    _customerState.value = ScreenState.Success(response.result)
+                }
+
+                is NetworkResponseState.Error -> {
+                    _customerState.value = ScreenState.Error(response.exception.message ?: "An error catched")
+                }
+
+                is NetworkResponseState.Loading -> {
+                    _customerState.value = ScreenState.Loading
+                }
             }
         }
     }

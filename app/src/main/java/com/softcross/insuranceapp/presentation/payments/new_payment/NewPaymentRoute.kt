@@ -33,6 +33,7 @@ import com.softcross.insuranceapp.common.extensions.creditCardDateRegex
 import com.softcross.insuranceapp.common.extensions.creditCardNumberRegex
 import com.softcross.insuranceapp.common.extensions.cvcRegex
 import com.softcross.insuranceapp.common.extensions.nameSurnameRegex
+import com.softcross.insuranceapp.common.extensions.nameSurnameRegexWithSpace
 import com.softcross.insuranceapp.domain.model.Payment
 import com.softcross.insuranceapp.domain.model.Policy
 import com.softcross.insuranceapp.presentation.components.CustomAnnotatedText
@@ -171,7 +172,7 @@ fun PaymentForm(
             givenValue = cardName,
             placeHolder = stringResource(id = R.string.field_card_name),
             onValueChange = { cardName = it },
-            regex = String::nameSurnameRegex,
+            regex = String::nameSurnameRegexWithSpace,
             errorMessage = stringResource(id = R.string.valid_name)
         )
         CustomTextField(

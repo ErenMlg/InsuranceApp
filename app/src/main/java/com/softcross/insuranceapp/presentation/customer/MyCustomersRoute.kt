@@ -62,6 +62,7 @@ fun MyCustomersRoute(
 
     if (uiState is ScreenState.Success) {
         snackbarMessage = stringResource(id = R.string.success_delete_customer)
+        customerList = uiState.data
         isError = false
     }
 

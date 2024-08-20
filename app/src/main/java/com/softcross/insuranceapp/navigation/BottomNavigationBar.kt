@@ -56,12 +56,9 @@ fun BottomNavigationBar(
                     onClick = {
                         navController.navigate(item.route) {
                             navController.graph.startDestinationRoute?.let { route ->
-                                popUpTo(route) {
-                                    saveState = true
-                                }
+                                popUpTo(route)
                             }
                             launchSingleTop = true
-                            restoreState = true
                         }
                     },
                     icon = {

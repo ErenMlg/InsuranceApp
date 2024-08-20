@@ -45,14 +45,11 @@ class MainActivity : ComponentActivity() {
                 val bottomBarState = rememberSaveable { (mutableStateOf(false)) }
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 when (navBackStackEntry?.destination?.route) {
-                    Login.route -> bottomBarState.value = false
-                    Splash.route -> bottomBarState.value = false
-                    ForgetPassword.route -> bottomBarState.value = false
-                    NewPolicy.route -> bottomBarState.value = false
-                    NewCustomer.route -> bottomBarState.value = false
-                    EditCustomer.route -> bottomBarState.value = false
-                    NewPayment.route -> bottomBarState.value = false
-                    else -> bottomBarState.value = true
+                    Home.route -> bottomBarState.value = true
+                    Customers.route -> bottomBarState.value = true
+                    Policies.route -> bottomBarState.value = true
+                    Payments.route -> bottomBarState.value = true
+                    else -> bottomBarState.value = false
                 }
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
